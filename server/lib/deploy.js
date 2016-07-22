@@ -3,11 +3,11 @@ import logger from '../lib/logger';
 import * as auth0 from '../lib/auth0';
 
 import { pushToSlack } from './slack';
-import { getChanges } from './github';
+import { getChanges } from './bitbucket';
 import { appendProgress } from './storage';
 import { getForClient } from './managementApiClient';
 
-const trackProgress = (id, branch, repository, sha, user) => {
+const trackProgress = (id, branch, repository, sha, user, diff) => {
   const logs = [];
   const log = (message) => {
     logs.push({ date: new Date(), message });

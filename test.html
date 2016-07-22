@@ -1,0 +1,5 @@
+<script>
+var regEx = new RegExp('(rules|database-connections)\/[a-zA-Z0-9\-\ ]+(.json|.js)','g'), sampleString=" app/controllers/MinerController.php | 6 +++++- rules/sdfs-df.js| 6 ++++database-connections/dd dddd.json| 6 +++++- app/views/miner/index.blade.php 2 +- app/views/miner/print.blade.php     | 2 +- 3 files changed, 7 insertions(+), 3 deletions(-) diff --git a/app/controllers/MinerController.php b/app/controllers/MinerController.php index 109f3e7..dbea36c 100644";
+var result = sampleString.match(regEx);
+console.log(JSON.stringify(result));
+</script>

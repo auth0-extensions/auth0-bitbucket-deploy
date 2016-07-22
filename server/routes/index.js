@@ -12,7 +12,7 @@ import { readStorage } from '../lib/storage';
 import { dashboardAdmins, requireUser } from '../lib/middlewares';
 
 const getRepository = () => {
-  const repo = config('GITHUB_REPOSITORY');
+  const repo = config('BITBUCKET_REPOSITORY');
 
   const parts = repo.split('/');
   if (parts.length === 5) {
@@ -33,8 +33,7 @@ export default (storageContext) => {
 
   routes.get('/api/config', requireUser, (req, res) => {
     res.json({
-      secret: config('EXTENSION_SECRET'),
-      branch: config('GITHUB_BRANCH'),
+      branch: config('BITBUCKET_BRANCH'),
       repository: getRepository()
     });
   });
@@ -44,7 +43,7 @@ export default (storageContext) => {
       .catch(next)
   );
   routes.post('/api/deployments', requireUser, (req, res, next) => {
-    deploy(storageContext, 'manual', config('GITHUB_BRANCH'), getRepository(), (req.body && req.body.sha) || config('GITHUB_BRANCH'), req.user.sub)
+    deploy(storageContext, 'manual', config('BITBUCKET_BRANCH'), getRepository(), (req.body && req.body.sha) || config('BITBUCKET_BRANCH'), req.user.sub)
       .then(stats => res.json(stats))
       .catch(next);
   });

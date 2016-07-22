@@ -26,7 +26,7 @@ class App extends Component {
                         <a href="https://manage.auth0.com/#/extensions">Extensions</a>
                       </li>
                     </ol>
-                    <h1 className="pull-left" style={{ paddingTop: '10px' }}>GitHub Integration</h1></div>
+                    <h1 className="pull-left" style={{ paddingTop: '10px' }}>Bitbucket Integration</h1></div>
                 </div>
                 <div className="widget-title title-with-nav-bars">
                   <ul className="nav nav-tabs">

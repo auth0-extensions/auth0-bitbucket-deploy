@@ -19,20 +19,24 @@
     "scopes": "read:connections update:connections read:rules create:rules update:rules delete:rules delete:clients"
   },
   "secrets": {
-    "GITHUB_REPOSITORY": {
+    "BITBUCKET_REPOSITORY": {
       "example": "myorganization/myrepo",
       "description": "The repository from which you want to deploy rules and database scripts",
       "required": true
     },
-    "GITHUB_BRANCH": {
+    "BITBUCKET_BRANCH": {
       "description": "The branch we should monitor for commits",
       "default": "master",
       "required": true
     },
-    "GITHUB_TOKEN": {
-      "description": "Your personal access token for GitHub",
-      "required": true,
-      "type": "password"
+    "BITBUCKET_USER": {
+      "description": "Bitbucket account",
+      "required": true
+    },
+    "BITBUCKET_PASSWORD": {
+      "description": "Bitbucket password",
+      "type": "password",
+      "required": true
     },
     "SLACK_INCOMING_WEBHOOK_URL": {
       "example": "https://hooks.slack.com/services/...",

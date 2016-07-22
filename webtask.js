@@ -20,8 +20,9 @@ const getServer = (req, res) => {
         CLIENT_VERSION: process.env.CLIENT_VERSION,
         SLACK_INCOMING_WEBHOOK_URL: req.webtaskContext.secrets.SLACK_INCOMING_WEBHOOK_URL,
         GITHUB_BRANCH: req.webtaskContext.secrets.GITHUB_BRANCH,
-        GITHUB_REPOSITORY: req.webtaskContext.secrets.GITHUB_REPOSITORY,
-        GITHUB_TOKEN: req.webtaskContext.secrets.GITHUB_TOKEN,
+        BITBUCKET_REPOSITORY: req.webtaskContext.secrets.BITBUCKET_REPOSITORY,
+        BITBUCKET_USER: req.webtaskContext.secrets.BITBUCKET_USER,
+        BITBUCKET_PASSWORD: req.webtaskContext.secrets.BITBUCKET_PASSWORD,
         WT_URL: req.webtaskContext.secrets.WT_URL
       });
 
