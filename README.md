@@ -14,6 +14,8 @@ First create a `Client` in your account with `read:connections` and `read/create
   "SLACK_INCOMING_WEBHOOK_URL": "https://hooks.slack.com/services/...",
   "BITBUCKET_BRANCH": "YOUR_BRANCH",
   "BITBUCKET_REPOSITORY": "YOUR_REPO",
+  "BITBUCKET_USER": "",
+  "BITBUCKET_PASSWORD": "",
   "AUTH0_DOMAIN": "YOUR_DOMAIN",
   "AUTH0_CLIENT_ID": "YOUR_CLIENT_SECRET",
   "AUTH0_CLIENT_SECRET": "YOUR_CLIENT_ID"
