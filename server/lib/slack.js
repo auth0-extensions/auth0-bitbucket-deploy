@@ -15,8 +15,8 @@ const createPayload = (progress, extensionUrl) => {
   if (progress.error) {
     msg.attachments.push({
       color: '#F35A00',
-      fallback: `GitHub to Auth0 Deployment failed: ${progress.error.message}`,
-      text: `GitHub to Auth0 Deployment failed ${details}`,
+      fallback: `Bitbucket to Auth0 Deployment failed: ${progress.error.message}`,
+      text: `Bitbucket to Auth0 Deployment failed ${details}`,
       fields: [
         { title: 'Repository', value: progress.repository, short: true },
         { title: 'Branch', value: progress.branch, short: true },
@@ -29,7 +29,7 @@ const createPayload = (progress, extensionUrl) => {
       { title: 'Repository', value: progress.repository, short: true },
       { title: 'Branch', value: progress.branch, short: true },
       { title: 'ID', value: progress.id, short: true },
-      { title: 'Commit', value: `<https://github.com/${progress.repository}/commit/${progress.sha}|${progress.sha}>`, short: true }
+      { title: 'Commit', value: progress.sha, short: true }
     ];
 
     if (progress.connectionsUpdated) {
@@ -47,8 +47,8 @@ const createPayload = (progress, extensionUrl) => {
 
     msg.attachments.push({
       color: '#7CD197',
-      fallback: 'GitHub to Auth0 Deployment',
-      text: `GitHub to Auth0 Deployment ${details}`,
+      fallback: 'Bitbucket to Auth0 Deployment',
+      text: `Bitbucket to Auth0 Deployment ${details}`,
       fields
     });
   }

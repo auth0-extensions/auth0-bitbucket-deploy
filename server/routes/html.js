@@ -10,7 +10,7 @@ export default () => {
   <!DOCTYPE html>
   <html lang="en">
   <head>
-    <title>Auth0 - GitHub Deployments</title>
+    <title>Auth0 - Bitbucket Deployments</title>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,7 +20,7 @@ export default () => {
     <link rel="stylesheet" type="text/css" href="https://cdn.auth0.com/manage/v0.3.1715/css/index.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.auth0.com/styleguide/4.6.13/index.css">
     <% if (assets.style) { %><link rel="stylesheet" type="text/css" href="/app/<%= assets.style %>"><% } %>
-    <% if (assets.version) { %><link rel="stylesheet" type="text/css" href="//cdn.auth0.com/extensions/auth0-github-deploy/assets/auth0-github-deploy.ui.<%= assets.version %>.css"><% } %>
+    <% if (assets.version) { %><link rel="stylesheet" type="text/css" href="//cdn.auth0.com/extensions/auth0-bitbucket-deploy/assets/auth0-bitbucket-deploy.ui.<%= assets.version %>.css"><% } %>
   </head>
   <body class="a0-extension">
     <div id="app"></div>
@@ -30,8 +30,8 @@ export default () => {
     <% if (assets.vendors) { %><script type="text/javascript" src="/app/<%= assets.vendors %>"></script><% } %>
     <% if (assets.app) { %><script type="text/javascript" src="/app/<%= assets.app %>"></script><% } %>
     <% if (assets.version) { %>
-    <script type="text/javascript" src="//cdn.auth0.com/extensions/auth0-github-deploy/assets/auth0-github-deploy.ui.vendors.<%= assets.version %>.js"></script>
-    <script type="text/javascript" src="//cdn.auth0.com/extensions/auth0-github-deploy/assets/auth0-github-deploy.ui.<%= assets.version %>.js"></script>
+    <script type="text/javascript" src="//cdn.auth0.com/extensions/auth0-bitbucket-deploy/assets/auth0-bitbucket-deploy.ui.vendors.<%= assets.version %>.js"></script>
+    <script type="text/javascript" src="//cdn.auth0.com/extensions/auth0-bitbucket-deploy/assets/auth0-bitbucket-deploy.ui.<%= assets.version %>.js"></script>
     <% } %>
   </body>
   </html>

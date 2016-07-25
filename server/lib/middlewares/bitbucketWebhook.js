@@ -45,6 +45,8 @@ module.exports = () => (req, res, next) => {
   if (!getIpInRange(req.headers['x-forwarded-for'])) {
     return next(new ArgumentError('The Bitbucket delivery ip is not correct.'));
   }
+  console.log(JSON.stringify(req.headers));
+  console.log(JSON.stringify(req.body));
   req.webhook = parse(req.headers, req.body);
   return next();
 };

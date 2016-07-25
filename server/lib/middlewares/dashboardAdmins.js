@@ -6,7 +6,7 @@ import config from '../config';
 export default () => {
   const options = {
     credentialsRequired: false,
-    clientName: 'GitHub Deployments',
+    clientName: 'Bitbucket Deployments',
     audience: () => `https://${config('AUTH0_DOMAIN')}/api/v2/`
   };
 

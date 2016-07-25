@@ -40,7 +40,7 @@ export default (storageContext, id, branch, repository, sha, user) => {
     progress.log(`Webhook received: ${id}.`);
   }
 
-  progress.log('Loading GitHub tree...');
+  progress.log('Loading Bitbucket tree...');
   return getChanges(repository, branch, sha)
     .then(context => {
       progress.log(`Assets: ${JSON.stringify({ id, user, ...context }, null, 2)}`);

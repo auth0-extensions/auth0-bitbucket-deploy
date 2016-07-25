@@ -1,0 +1,236 @@
+{
+  "push": {
+    "changes": [
+      {
+        "old": {
+          "links": {
+            "commits": {
+              "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commits/master"
+            },
+            "html": {
+              "href": "https://bitbucket.org/Xan/auth0-rules-git/branch/master"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/refs/branches/master"
+            }
+          },
+          "type": "branch",
+          "name": "master",
+          "repository": {
+            "name": "auth0-rules-git",
+            "full_name": "Xan/auth0-rules-git",
+            "type": "repository",
+            "uuid": "{8b84ffd2-f8a5-4a85-93b2-79e01b800983}",
+            "links": {
+              "html": {
+                "href": "https://bitbucket.org/Xan/auth0-rules-git"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/Xan/auth0-rules-git/avatar/32/"
+              },
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git"
+              }
+            }
+          },
+          "target": {
+            "type": "commit",
+            "author": {
+              "raw": "Oleksandr Zarubin <oleksandr.zarubin@ua.akvelon.com>"
+            },
+            "parents": [
+              {
+                "links": {
+                  "html": {
+                    "href": "https://bitbucket.org/Xan/auth0-rules-git/commits/0848b4407e2dc63682ff78e13a96709b482c45fd"
+                  },
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commit/0848b4407e2dc63682ff78e13a96709b482c45fd"
+                  }
+                },
+                "hash": "0848b4407e2dc63682ff78e13a96709b482c45fd",
+                "type": "commit"
+              }
+            ],
+            "links": {
+              "html": {
+                "href": "https://bitbucket.org/Xan/auth0-rules-git/commits/abfa1cf5630f60004d411ae353d99fed0d4e3422"
+              },
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commit/abfa1cf5630f60004d411ae353d99fed0d4e3422"
+              }
+            },
+            "hash": "abfa1cf5630f60004d411ae353d99fed0d4e3422",
+            "date": "2016-07-25T08:01:33+00:00",
+            "message": "testing\n"
+          }
+        },
+        "forced": false,
+        "links": {
+          "commits": {
+            "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commits?include=c27016358d0d0a37be91de673e935cd8e8ca2489&exclude=abfa1cf5630f60004d411ae353d99fed0d4e3422"
+          },
+          "diff": {
+            "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/diff/c27016358d0d0a37be91de673e935cd8e8ca2489..abfa1cf5630f60004d411ae353d99fed0d4e3422"
+          },
+          "html": {
+            "href": "https://bitbucket.org/Xan/auth0-rules-git/branches/compare/c27016358d0d0a37be91de673e935cd8e8ca2489..abfa1cf5630f60004d411ae353d99fed0d4e3422"
+          }
+        },
+        "closed": false,
+        "commits": [
+          {
+            "type": "commit",
+            "author": {
+              "raw": "Oleksandr Zarubin <oleksandr.zarubin@ua.akvelon.com>"
+            },
+            "parents": [
+              {
+                "links": {
+                  "html": {
+                    "href": "https://bitbucket.org/Xan/auth0-rules-git/commits/abfa1cf5630f60004d411ae353d99fed0d4e3422"
+                  },
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commit/abfa1cf5630f60004d411ae353d99fed0d4e3422"
+                  }
+                },
+                "hash": "abfa1cf5630f60004d411ae353d99fed0d4e3422",
+                "type": "commit"
+              }
+            ],
+            "links": {
+              "html": {
+                "href": "https://bitbucket.org/Xan/auth0-rules-git/commits/c27016358d0d0a37be91de673e935cd8e8ca2489"
+              },
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commit/c27016358d0d0a37be91de673e935cd8e8ca2489"
+              }
+            },
+            "hash": "c27016358d0d0a37be91de673e935cd8e8ca2489",
+            "date": "2016-07-25T08:10:57+00:00",
+            "message": "testing\n"
+          }
+        ],
+        "created": false,
+        "new": {
+          "links": {
+            "commits": {
+              "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commits/master"
+            },
+            "html": {
+              "href": "https://bitbucket.org/Xan/auth0-rules-git/branch/master"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/refs/branches/master"
+            }
+          },
+          "type": "branch",
+          "name": "master",
+          "repository": {
+            "name": "auth0-rules-git",
+            "full_name": "Xan/auth0-rules-git",
+            "type": "repository",
+            "uuid": "{8b84ffd2-f8a5-4a85-93b2-79e01b800983}",
+            "links": {
+              "html": {
+                "href": "https://bitbucket.org/Xan/auth0-rules-git"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/Xan/auth0-rules-git/avatar/32/"
+              },
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git"
+              }
+            }
+          },
+          "target": {
+            "type": "commit",
+            "author": {
+              "raw": "Oleksandr Zarubin <oleksandr.zarubin@ua.akvelon.com>"
+            },
+            "parents": [
+              {
+                "links": {
+                  "html": {
+                    "href": "https://bitbucket.org/Xan/auth0-rules-git/commits/abfa1cf5630f60004d411ae353d99fed0d4e3422"
+                  },
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commit/abfa1cf5630f60004d411ae353d99fed0d4e3422"
+                  }
+                },
+                "hash": "abfa1cf5630f60004d411ae353d99fed0d4e3422",
+                "type": "commit"
+              }
+            ],
+            "links": {
+              "html": {
+                "href": "https://bitbucket.org/Xan/auth0-rules-git/commits/c27016358d0d0a37be91de673e935cd8e8ca2489"
+              },
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git/commit/c27016358d0d0a37be91de673e935cd8e8ca2489"
+              }
+            },
+            "hash": "c27016358d0d0a37be91de673e935cd8e8ca2489",
+            "date": "2016-07-25T08:10:57+00:00",
+            "message": "testing\n"
+          }
+        },
+        "truncated": false
+      }
+    ]
+  },
+  "actor": {
+    "links": {
+      "html": {
+        "href": "https://bitbucket.org/Xan/"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/account/Xan/avatar/32/"
+      },
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/Xan"
+      }
+    },
+    "username": "Xan",
+    "type": "user",
+    "uuid": "{293a503f-4d57-4e3c-a4d6-03fd3461b8ed}",
+    "display_name": "Alexander Zarubin"
+  },
+  "repository": {
+    "is_private": true,
+    "links": {
+      "html": {
+        "href": "https://bitbucket.org/Xan/auth0-rules-git"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/Xan/auth0-rules-git/avatar/32/"
+      },
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/Xan/auth0-rules-git"
+      }
+    },
+    "type": "repository",
+    "uuid": "{8b84ffd2-f8a5-4a85-93b2-79e01b800983}",
+    "name": "auth0-rules-git",
+    "full_name": "Xan/auth0-rules-git",
+    "owner": {
+      "links": {
+        "html": {
+          "href": "https://bitbucket.org/Xan/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/Xan/avatar/32/"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/Xan"
+        }
+      },
+      "username": "Xan",
+      "type": "user",
+      "uuid": "{293a503f-4d57-4e3c-a4d6-03fd3461b8ed}",
+      "display_name": "Alexander Zarubin"
+    },
+    "scm": "git",
+    "website": ""
+  }
+}

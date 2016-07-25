@@ -30,7 +30,7 @@ const updateDatabase = (progress, client, connections, database) => {
     options.customScripts[script] = null;
   });
 
-  // Set all custom scripts from GitHub.
+  // Set all custom scripts from Bitbucket.
   database.scripts.forEach((script) => {
     options.customScripts[script.stage] = script.contents;
   });
