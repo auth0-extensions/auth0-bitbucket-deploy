@@ -84,9 +84,10 @@ const deleteRule = (progress, client, rules, existingRule) => {
  * Delete all rules.
  */
 export const deleteRules = (progress, client, rules) => {
-  if (rules.length === 0) {
-    return Promise.resolve(true);
-  }
+  // should remove old rules anyway
+  // if (rules.length === 0) {
+  //   return Promise.resolve(true);
+  // }
 
   progress.log('Deleting rules that no longer exist in the repository...');
 

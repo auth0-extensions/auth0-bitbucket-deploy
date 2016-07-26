@@ -1,10 +1,9 @@
 import _ from 'lodash';
 import path from 'path';
 import Promise from 'bluebird';
-import bitbucketApi from 'bitbucket-server-rest';
-import request from 'request-promise';
 
 import config from './config';
+import bitbucketApi from './bitbucketApi';
 import logger from '../lib/logger';
 import * as constants from './constants';
 
@@ -58,12 +57,6 @@ const validFilesOnly = (fileName) => {
 };
 
 /*
- * Get a flat list of changes and files that need to be added/updated/removed.
- */
-export const hasChanges = (commits) =>
-  true;
-
-/*
  * Parse the repository.
  */
 const parseRepo = (repository = '') => {
@@ -86,7 +79,10 @@ const getRulesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().get('repositories/{username}/{repo_slug}/src/{revision}/' + constants.RULES_DIRECTORY, params, (err, res, response) => {
-        if (err) {
+        if (err && err.message == 'Status Code: 404') {
+          return resolve([]);
+        }
+        else if (err) {
           return reject(err);
         } else if (!res) {
           return resolve([]);
@@ -135,8 +131,10 @@ const getConnectionsTree = (params) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().get('repositories/{username}/{repo_slug}/src/{revision}/' + constants.DATABASE_CONNECTIONS_DIRECTORY, params, (err, res, response) => {
-
-        if (err) {
+        if (err && err.message == 'Status Code: 404') {
+          return resolve([]);
+        }
+        else if (err) {
           return reject(err);
         } else if (!res) {
           return resolve([]);

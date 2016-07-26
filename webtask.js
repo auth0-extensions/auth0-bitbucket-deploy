@@ -19,7 +19,7 @@ const getServer = (req, res) => {
         HOSTING_ENV: 'webtask',
         CLIENT_VERSION: process.env.CLIENT_VERSION,
         SLACK_INCOMING_WEBHOOK_URL: req.webtaskContext.secrets.SLACK_INCOMING_WEBHOOK_URL,
-        GITHUB_BRANCH: req.webtaskContext.secrets.GITHUB_BRANCH,
+        BITBUCKET_BRANCH: req.webtaskContext.secrets.BITBUCKET_BRANCH,
         BITBUCKET_REPOSITORY: req.webtaskContext.secrets.BITBUCKET_REPOSITORY,
         BITBUCKET_USER: req.webtaskContext.secrets.BITBUCKET_USER,
         BITBUCKET_PASSWORD: req.webtaskContext.secrets.BITBUCKET_PASSWORD,

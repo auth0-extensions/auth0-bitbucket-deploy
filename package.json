@@ -1,6 +1,6 @@
 {
   "name": "auth0-bitbucket-deploy-extension",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Auth0 Bitbucket Deployment Extension",
   "engines": {
     "node": "5.9.0"
@@ -41,10 +41,10 @@
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.9.0",
     "babel-runtime": "^6.9.2",
-    "bitbucket-server-rest": "file:bitbucket-server-rest",
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "cross-env": "^2.0.0",
+    "deep-extend": "^0.4.1",
     "ejs": "^2.4.2",
     "express": "^4.14.0",
     "express-jwt": "^3.4.0",
