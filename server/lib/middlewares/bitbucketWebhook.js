@@ -30,11 +30,14 @@ const parse = (headers, {push = {}, repository = {}, actor = {}}) => {
     }
   }
 };
-const getIpInRange = (currIp)=> {
-  return ip.cidrSubnet('131.103.20.160/27').contains(currIp)
-    || ip.cidrSubnet('165.254.145.0/26').contains(currIp)
-    || ip.cidrSubnet('104.192.143.0/24').contains(currIp);
+
+const getIpInRange = (currIp) => {
+  return true;
+  // return ip.cidrSubnet('131.103.20.160/27').contains(currIp)
+  //   || ip.cidrSubnet('165.254.145.0/26').contains(currIp)
+  //   || ip.cidrSubnet('104.192.143.0/24').contains(currIp);
 };
+
 module.exports = () => (req, res, next) => {
   if (!req.headers['x-hook-uuid']) {
     return next(new ArgumentError('The Bitbucket delivery identifier is missing.'));
