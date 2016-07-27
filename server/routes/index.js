@@ -34,6 +34,7 @@ export default (storageContext) => {
   routes.get('/api/config', requireUser, (req, res) => {
     res.json({
       branch: config('BITBUCKET_BRANCH'),
+      secret: config('EXTENSION_SECRET'),
       repository: getRepository()
     });
   });

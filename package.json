@@ -50,7 +50,6 @@
     "express-jwt": "^3.4.0",
     "github": "^0.2.4",
     "glob": "^7.0.5",
-    "ipaddr.js": "^1.2.0",
     "lodash": "^3.10.1",
     "lru-memoizer": "^1.6.0",
     "moment": "^2.13.0",

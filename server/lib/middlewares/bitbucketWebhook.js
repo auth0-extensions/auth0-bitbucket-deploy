@@ -1,5 +1,5 @@
-import ipaddr from 'ipaddr.js';
 import {ArgumentError, UnauthorizedError} from '../errors';
+import config from '../config';
 
 const parse = (headers, {push = {}, repository = {}, actor = {}}) => {
   if (push.changes && push.changes.length > 0 && push.changes[0].new) {
@@ -30,37 +30,18 @@ const parse = (headers, {push = {}, repository = {}, actor = {}}) => {
     }
   }
 };
-const getIpInRange = (currIp)=> {
-  let address;
 
-  if (ipaddr.IPv4.isValid(currIp)) {
-    address = ipaddr.IPv4.parse(currIp)
-  }
-  else if (ipaddr.IPv6.isValid(currIp)) {
-    address = ipaddr.IPv6.parse(currIp).toIPv4Address();
-  }
-  else {
-    return false;
-  }
-
-  return address.match(ipaddr.parseCIDR('131.103.20.160/27'))
-    || address.match(ipaddr.parseCIDR('165.254.145.0/26'))
-    || address.match(ipaddr.parseCIDR('104.192.143.0/24'));
-};
 module.exports = () => (req, res, next) => {
-  console.log(req.headers);
-  console.log(req.connection.remoteAddress);
-  console.log(req.ip);
-  console.log(req.ips);
-
   if (!req.headers['x-hook-uuid']) {
     return next(new ArgumentError('The Bitbucket delivery identifier is missing.'));
   }
+
   if (!req.headers['x-event-key']) {
     return next(new ArgumentError('The Bitbucket event name is missing.'));
   }
-  if (!getIpInRange(req.headers['x-forwarded-for'])) {
-    return next(new ArgumentError(`The Bitbucket delivery ip (${req.headers['x-forwarded-for']}) is not correct.`));
+
+  if (!req.params.secret || req.params.secret !== config('EXTENSION_SECRET')) {
+    return next(new ArgumentError(`The Extension Secret is incorrect.`));
   }
 
   req.webhook = parse(req.headers, req.body);

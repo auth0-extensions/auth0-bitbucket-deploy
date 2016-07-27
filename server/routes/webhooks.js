@@ -9,7 +9,7 @@ export default (storageContext) => {
   const activeBranch = config('BITBUCKET_BRANCH');
 
   const webhooks = express.Router();
-  webhooks.post('/deploy', bitbucketWebhook(), (req, res, next) => {
+  webhooks.post('/deploy/:secret?', bitbucketWebhook(), (req, res, next) => {
     const { id, branch, repository, user, sha, diff } = req.webhook;
 
     // Only accept push requests.
