@@ -1,5 +1,11 @@
-import ip from 'ip';
+import ipChecker from 'ip';
 import {ArgumentError, UnauthorizedError} from '../errors';
+
+const bitbucketIps = [
+  ipChecker.cidrSubnet('131.103.20.160/27'),
+  ipChecker.cidrSubnet('165.254.145.0/26'),
+  ipChecker.cidrSubnet('104.192.143.0/24')
+];
 
 const parse = (headers, {push = {}, repository = {}, actor = {}}) => {
   if (push.changes && push.changes.length > 0 && push.changes[0].new) {
@@ -31,12 +37,8 @@ const parse = (headers, {push = {}, repository = {}, actor = {}}) => {
   }
 };
 
-const getIpInRange = (currIp) => {
-  return true;
-  // return ip.cidrSubnet('131.103.20.160/27').contains(currIp)
-  //   || ip.cidrSubnet('165.254.145.0/26').contains(currIp)
-  //   || ip.cidrSubnet('104.192.143.0/24').contains(currIp);
-};
+const getIpInRange = (currIp) =>
+  bitbucketIps.filter(mask => mask.contains(currIp)).length;
 
 module.exports = () => (req, res, next) => {
   if (!req.headers['x-hook-uuid']) {
