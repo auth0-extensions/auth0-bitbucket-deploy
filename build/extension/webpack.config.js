@@ -41,9 +41,11 @@ module.exports = externalModules.then((externals) => {
   externals.compatible['auth0'] = true;
   externals.compatible['nconf'] = true;
   externals.compatible['node-uuid'] = true;
+  externals.compatible['ip'] = true;
   externals.compatible['jade'] = true;
   externals.compatible['jsonwebtoken'] = true;
   externals.compatible['debug'] = true;
+  externals.compatible['deep-extend'] = true;
   externals.compatible['body-parser'] = true;
   externals.compatible['mime-types'] = true;
   externals.compatible['auth0@2.0.0'] = true;
