@@ -48,6 +48,11 @@ const getIpInRange = (currIp)=> {
     || address.match(ipaddr.parseCIDR('104.192.143.0/24'));
 };
 module.exports = () => (req, res, next) => {
+  console.log(req.headers);
+  console.log(req.connection.remoteAddress);
+  console.log(req.ip);
+  console.log(req.ips);
+
   if (!req.headers['x-hook-uuid']) {
     return next(new ArgumentError('The Bitbucket delivery identifier is missing.'));
   }
