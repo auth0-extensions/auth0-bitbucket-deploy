@@ -16,7 +16,7 @@ export default class WebhookSettings extends Component {
   };
 
   render() {
-    const { payloadUrl, contentType, repository, branch } = this.props;
+    const { payloadUrl, repository, branch } = this.props;
 
     return (
       <div>
@@ -27,12 +27,6 @@ export default class WebhookSettings extends Component {
             <label className="col-xs-2 control-label">Payload URL</label>
             <div className="col-xs-9">
               <input type="text" readOnly="readonly" className="form-control" value={payloadUrl} />
-            </div>
-          </div>
-          <div className="form-group">
-            <label className="col-xs-2 control-label">Content Type</label>
-            <div className="col-xs-9">
-              <input type="text" readOnly="readonly" className="form-control" value={contentType} />
             </div>
           </div>
         </form>
