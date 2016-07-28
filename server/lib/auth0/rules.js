@@ -18,7 +18,7 @@ const getRules = (progress, client) => {
         .value();
       return progress.rules;
     });
-}
+};
 
 /*
  * Delete a rule.
