@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import Promise from 'bluebird';
 import * as constants from '../constants';
-import {ValidationError} from '../errors'
-
+import { ValidationError } from '../errors'
 
 /*
  * Get database connections.
@@ -63,8 +62,7 @@ export const updateDatabases = (progress, client, databases) => {
     );
 };
 
-
-/* 
+/*
  * Validates that all databases included in the repo exist in the tenant
  */
 export const validateDatabases = (progress, client, databases) => {
@@ -80,7 +78,9 @@ export const validateDatabases = (progress, client, databases) => {
         _.map(databases, db => db.name),
         _.map(connections, conn => conn.name));
 
-      if (missingDatabases.length > 0) throw new ValidationError(`The following databases do not exist in the Auth0 tenant: ${missingDatabases}`);
+      if (missingDatabases.length > 0) {
+        throw new ValidationError(`The following databases do not exist in the Auth0 tenant: ${missingDatabases}`);
+      }
 
       return true;
     });
