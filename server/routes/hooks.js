@@ -2,17 +2,18 @@ import { Router as router } from 'express';
 
 import config from '../lib/config';
 import logger from '../lib/logger';
-import { getForClient } from '../lib/managementApiClient';
-import { validateHookToken } from '../lib/middlewares';
+import { middlewares } from 'auth0-extension-express-tools';
 
 export default () => {
   const hooks = router();
-  hooks.use('/on-uninstall', validateHookToken('/.extensions/on-uninstall'));
+  const hookValidator = middlewares
+    .validateHookToken(config('AUTH0_DOMAIN'), config('WT_URL'), config('EXTENSION_SECRET'));
+
+  hooks.use('/on-uninstall', hookValidator('/.extensions/on-uninstall'));
+
   hooks.delete('/on-uninstall', (req, res) => {
     logger.debug('Uninstall running...');
-
-    getForClient(config('AUTH0_DOMAIN'), config('AUTH0_CLIENT_ID'), config('AUTH0_CLIENT_SECRET'))
-      .then(client => client.clients.delete({ client_id: config('AUTH0_CLIENT_ID') }))
+    req.auth0.clients.delete({ client_id: config('AUTH0_CLIENT_ID') })
       .then(() => {
         logger.debug(`Deleted client ${config('AUTH0_CLIENT_ID')}`);
         res.sendStatus(204);
@@ -23,5 +24,6 @@ export default () => {
         res.sendStatus(500);
       });
   });
+
   return hooks;
 };

@@ -1,11 +1,9 @@
 'use strict';
-const request = require('request');
-const extend = require('deep-extend');
+var request = require('request');
+var extend = require('deep-extend');
 
 function Bitbucket(options) {
-  if (!(this instanceof Bitbucket)) {
-    return new Bitbucket(options);
-  }
+  if (!(this instanceof Bitbucket)) return new Bitbucket(options);
 
   this.options = extend({
     user_name: null,
@@ -29,6 +27,7 @@ Bitbucket.prototype.__buildEndpoint = function(path, params) {
   }
 
   var url = this.options.rest_base + this.options.rest_path + this.options.rest_version + '/' + path;
+
   for (var key in params) {
     if (params.hasOwnProperty(key)) {
       url = url.replace('{' + key + '}', params[key]);
