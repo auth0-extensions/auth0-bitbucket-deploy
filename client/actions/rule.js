@@ -16,36 +16,16 @@ export function fetchAllRules() {
     };
 }
 
-export function fetchManualRules() {
+export function updateRules(data) {
     return {
-        type: constants.FETCH_MANUAL_RULES,
+        type: constants.UPDATE_MANUAL_RULES,
         payload: {
-            promise: axios.get('/api/rules/manual', {
-                timeout: 5000,
+            promise: axios({
+                method: 'post',
+                url: '/api/rules',
+                data: data,
                 responseType: 'json'
             })
         }
-    };
-}
-
-export function updateRules(data, onSuccess) {
-    return (dispatch) =>
-    {
-        dispatch({
-            type: constants.UPDATE_MANUAL_RULES,
-            meta: {
-                onSuccess: () => {
-                onSuccess();
-                },
-                onError: ()=>{
-                onSuccess();
-                }
-                },
-            payload: {
-            promise: axios.post('/api/rules/', data , {
-                responseType: 'json'
-            })
-        }
-    });
     };
 }

@@ -23,7 +23,7 @@ export default class RulesTable extends Component {
               manualRules.push(elements[i].value);
           }
       }
-      this.props.saveManualRules(manualRules,function(){
+      this.props.saveManualRules({names:manualRules}).then(() => {
           Alert.info('Manual rules were updated.',{
               effect: 'slide',
               limit: 1
@@ -38,21 +38,17 @@ export default class RulesTable extends Component {
          <Alert stack={{limit: 3}} position='top' />
       <Table>
         <TableHeader>
-          <TableColumn width="20%">Id</TableColumn>
-          <TableColumn width="40%">Name</TableColumn>
-          <TableColumn width="20%">Enabled</TableColumn>
+          <TableColumn width="80%">Name</TableColumn>
           <TableColumn width="20%">Manual Rule</TableColumn>
         </TableHeader>
         <TableBody>
-        {rules.map((rule, index) => {
+        {rules.map((isManual, index) => {
           return (
               <TableRow key={index}>
-                  <TableTextCell>{rule.id}</TableTextCell>
-                  <TableTextCell>{rule.name}</TableTextCell>
-                  <TableTextCell>{rule.enabled?'Yes':'No'}</TableTextCell>
+                  <TableTextCell>{index}</TableTextCell>
                   <TableTextCell>
                       <div className="switch-animate">
-                          <input className="uiswitch isManualRule" value={rule.id} type="checkbox" name="iSManualRule" />
+                          <input className="uiswitch isManualRule" value={index} defaultChecked={isManual} type="checkbox" name="iSManualRule" />
                       </div>
                   </TableTextCell>
               </TableRow>

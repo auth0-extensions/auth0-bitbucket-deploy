@@ -10,7 +10,6 @@ export default () => {
         req.storage.read()
           .then(data => {
             const result = {};
-
             if (data && data.excluded_rules) {
               _.forEach(rules, (rule) => {
                 result[rule.name] = (data.excluded_rules.indexOf(rule.name) >= 0);
@@ -38,7 +37,7 @@ export default () => {
         return data;
       })
       .then(data => req.storage.write(data))
-      .then(() => req.status(200).send())
+      .then(() => res.status(201).send())
       .catch(next)
   });
 
