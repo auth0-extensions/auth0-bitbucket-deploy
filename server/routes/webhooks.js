@@ -25,7 +25,7 @@ export default () => {
     res.status(200).json();
 
     // Deploy the changes.
-    return deploy(req.storage, id, branch, repository, sha, user, diff, req.auth0);
+    return deploy(req.storage, id, branch, repository, sha, user, req.auth0);
   });
 
   return webhooks;

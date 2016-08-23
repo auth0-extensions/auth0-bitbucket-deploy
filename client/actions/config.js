@@ -8,7 +8,7 @@ export function fetchConfiguration() {
   return {
     type: constants.FETCH_CONFIGURATION,
     payload: {
-      promise: axios.get('/api/rules', {
+      promise: axios.get('/api/config', {
         timeout: 5000,
         responseType: 'json'
       })
