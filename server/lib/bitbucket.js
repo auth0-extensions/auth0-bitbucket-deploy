@@ -27,6 +27,12 @@ const isDatabaseConnection = (fileName) =>
 fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
 
 /*
+ * Check if a file is part of the pages folder.
+ */
+const isPage = (fileName) =>
+fileName.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0;
+
+/*
  * Get the details of a database file script.
  */
 const getDatabaseScriptDetails = (filename) => {
@@ -56,6 +62,22 @@ const validFilesOnly = (fileName) => {
   return false;
 };
 
+/**
+ * only current pages could be uploaded
+ * @param fileName
+ * @returns {boolean}
+ */
+const validPageFilesOnly = (fileName) => {
+  if (
+      fileName=='pages/password_reset.html'||
+      fileName=='pages/password_reset.json'||
+      fileName=='pages/login.html'||
+      fileName=='pages/login.json'
+  ){
+    return true;
+  }
+  return false;
+};
 /*
  * Parse the repository.
  */
@@ -71,6 +93,33 @@ const parseRepo = (repository = '') => {
 
   throw new Error(`Invalid repository: ${repository}`);
 };
+
+/*
+ * Get pages tree.
+ */
+const getPagesTree = (params) =>
+    new Promise((resolve, reject) => {
+        try {
+          bitbucket().get('repositories/{username}/{repo_slug}/src/{revision}/' + constants.PAGES_DIRECTORY, params, (err, res, response) => {
+          if (err && err.message == 'Status Code: 404') {
+        return resolve([]);
+      }
+      else if (err) {
+        return reject(err);
+      } else if (!res) {
+        return resolve([]);
+      }
+      const files = res.files
+              .filter(f => validPageFilesOnly(f.path));
+      files.forEach((elem, idx) => {
+        files[idx].path = elem.path
+      });
+      return resolve(files);
+      });
+      } catch (e) {
+        reject(e);
+      }
+    });
 
 /*
  * Get rules tree.
@@ -168,10 +217,11 @@ const getTree = (repository, branch, sha) => {
   };
   const promises = {
     connections: getConnectionsTree(params),
-    rules: getRulesTree(params)
+    rules: getRulesTree(params),
+    pages: getPagesTree(params)
   };
   return Promise.props(promises)
-    .then((result) => (_.union(result.rules, result.connections)));
+    .then((result) => (_.union(result.rules, result.connections, result.pages)));
 };
 
 /*
@@ -304,6 +354,45 @@ const getDatabaseScripts = (repository, branch, files, shaToken) => {
 };
 
 /*
+ * Download a single page script.
+ */
+const downloadPage = (repository, branch, pageName, page, shaToken) => {
+  const currentPage = {
+    ...page,
+    name: pageName
+  };
+  const downloads = [];
+  if(page.file)
+  downloads.push(downloadFile(repository, branch, page.file, shaToken)
+      .then(file => {
+        currentPage.contents = file.contents;
+      }));
+  return Promise.all(downloads)
+      .then(() => currentPage);
+};
+
+/*
+ * Get all pages.
+ */
+const getPages = (repository, branch, files, shaToken) => {
+    const pages = {};
+    // Determine if we have the script, the metadata or both.
+    _.filter(files, f => isPage(f.path)).forEach(file => {
+        let pageName = path.parse(file.path).name;
+        let ext = path.parse(file.path).ext;
+        const index = pageName+ext;
+        pages[index] = pages[pageName] || {};
+        pages[index].file = file;
+        pages[index].contents = null;
+        pages[index].sha = file.sha;
+        pages[index].path = file.path;
+        if(ext!='json')
+        pages[index].meta = path.parse(file.path).name+'.json';
+    });
+    return Promise.map(Object.keys(pages), (pageName) => downloadPage(repository, branch, pageName, pages[pageName], shaToken), {concurrency: 2});
+};
+
+/*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
 export const getChanges = (repository, branch, sha) =>
@@ -316,12 +405,14 @@ export const getChanges = (repository, branch, sha) =>
 
       const promises = {
         rules: getRules(repository, branch, files, sha),
-        databases: getDatabaseScripts(repository, branch, files, sha)
+        pages: getPages(repository, branch, files, sha),
+        databases: getDatabaseScripts(repository, branch, files, sha),
       };
 
       return Promise.props(promises)
         .then((result) => ({
           rules: result.rules,
-          databases: result.databases
+          databases: result.databases,
+          pages: result.pages
         }));
     });
