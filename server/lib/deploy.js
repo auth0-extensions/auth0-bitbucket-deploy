@@ -6,7 +6,7 @@ import { pushToSlack } from './slack';
 import { getChanges } from './bitbucket';
 import { appendProgress } from './storage';
 
-const trackProgress = (id, branch, repository, sha, user, diff) => {
+const trackProgress = (id, branch, repository, sha, user) => {
   const logs = [];
   const log = (message) => {
     logs.push({ date: new Date(), message });

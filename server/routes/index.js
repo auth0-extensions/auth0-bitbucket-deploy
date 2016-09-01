@@ -9,7 +9,6 @@ import webhooks from './webhooks';
 
 import config from '../lib/config';
 import deploy from '../lib/deploy';
-import { readStorage } from '../lib/storage';
 import { dashboardAdmins, requireUser, getStorage } from '../lib/middlewares';
 
 const getRepository = () => {
