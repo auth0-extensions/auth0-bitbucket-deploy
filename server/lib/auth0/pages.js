@@ -1,47 +1,67 @@
-import config from '../../lib/config';
 import Promise from 'bluebird';
+
+
 export const updatePasswordResetPage = (progress, client, data) => {
-    let payload = {};
-    data.map(file => {
-        if (file.name == 'password_reset.html') {
-            payload['change_password'] = {
-                "enabled": getIsEnabled(file,data),
-                "html": file.contents
-            };
-        }
-    });
+  let payload = {};
+
+  data.map(file => {
+    if (file.name == 'password_reset.html') {
+      payload['change_password'] = {
+        "enabled": getIsEnabled(file, data),
+        "html": file.contents
+      };
+    }
+  });
+
+  if (payload.change_password) {
+    progress.log('Updating change password page...');
+
     return getClient(progress, client).then((clientId) => {
-        client.tenant.tenant.patch({client_id: clientId}, payload);
+      client.tenant.tenant.patch({client_id: clientId}, payload);
     });
+  }
+  else {
+    return Promise.resolve(true);
+  }
 };
 
 export const updateLoginPage = (progress, client, data) => {
-    let payload = {};
-    data.map(file => {
-        if (file.name == 'login.html') {
-            payload['custom_login_page'] = file.contents;
-            payload['custom_login_page_on'] = getIsEnabled(file,data);
-        }
-    });
+  const payload = {};
+
+  data.map(file => {
+    if (file.name == 'login.html') {
+      payload['custom_login_page'] = file.contents;
+      payload['custom_login_page_on'] = getIsEnabled(file, data);
+    }
+  });
+
+  if (payload.custom_login_page) {
+    progress.log('Updating login page...');
+
     return getClient(progress, client).then((clientId) => {
-        client.clients.update({client_id: clientId}, payload);
+      client.clients.update({client_id: clientId}, payload);
     });
+  }
+  else {
+    return Promise.resolve(true);
+  }
 };
 
 /*
  * Get current client id.
  */
 const getClient = (progress, client) => {
-    if (progress.client_id) return Promise.resolve(progress.client_id);
-    return Promise.all(client.clients.getAll())
-        .then(clients => {
-            clients.map(client=> {
-                if (client.global == true) {
-                    progress.client_id = client.client_id;
-                }
-            });
-            return progress.client_id;
-        });
+  if (progress.client_id) return Promise.resolve(progress.client_id);
+
+  return Promise.all(client.clients.getAll())
+    .then(clients => {
+      clients.map(client=> {
+        if (client.global == true) {
+          progress.client_id = client.client_id;
+        }
+      });
+      return progress.client_id;
+    });
 };
 
 /**
@@ -50,12 +70,14 @@ const getClient = (progress, client) => {
  * @param files
  * @returns {boolean}
  */
-const getIsEnabled = (currentFile, files ) => {
-    let isEnabled = false;
-    files.map(file=>{
-        if(file.name==currentFile.meta){
-            isEnabled = file.contents.enabled
-        }
-    });
-    return isEnabled;
+const getIsEnabled = (currentFile, files) => {
+  let isEnabled = true;
+
+  files.map(file=> {
+    if (file.name == currentFile.meta) {
+      isEnabled = (typeof file.contents === 'object') ? file.contents.enabled : JSON.parse(file.contents).enabled;
+    }
+  });
+
+  return isEnabled;
 };

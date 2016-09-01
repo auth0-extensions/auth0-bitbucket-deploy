@@ -145,4 +145,45 @@ describe.only('managementApiClient', () => {
       });
     });
   });
+
+  describe('#updateLoginPage', () => {
+    it('should update custom login page', (done) => {
+      const data = [
+        {
+          contents: '<html>\n<head></head>\n\n<body> \n<h1> Login Page </h1>\n</body>\n</html>',
+          meta: 'login.json',
+          name: 'login.html'
+        },
+        {
+          contents: '{\n\t"enabled": false\n}',
+          meta: 'login.json',
+          name: 'login.json'
+        }];
+
+      auth0.updateLoginPage(progress, client, data).then(() => {
+        done();
+      });
+    });
+  });
+
+  describe('#updatePasswordPage', () => {
+    it('should update custom password page', (done) => {
+      const data = [
+        {
+          contents: '<html>\n<head></head>\n\n<body> \n<h1> Reset Password Page </h1>\n</body>\n</html>',
+          meta: 'password_reset.json',
+          name: 'password_reset.html'
+        },
+        {
+          contents: '{\n\t"enabled": false\n}',
+          meta: 'password_reset.json',
+          name: 'password_reset.json'
+        }
+      ];
+
+      auth0.updatePasswordResetPage(progress, client, data).then(() => {
+        done();
+      });
+    });
+  });
 });
