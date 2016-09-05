@@ -29,16 +29,16 @@ export default () => {
   });
 
   api.post('/', (req, res, next) => {
-    const excluded_rules = req.body.names || [];
+    const excludedRules = req.body.names || [];
 
     req.storage.read()
       .then(data => {
-        data.excluded_rules = excluded_rules;
+        data.excluded_rules = excludedRules;
         return data;
       })
       .then(data => req.storage.write(data))
       .then(() => res.status(201).send())
-      .catch(next)
+      .catch(next);
   });
 
   return api;

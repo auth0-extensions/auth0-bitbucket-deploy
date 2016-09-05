@@ -69,11 +69,11 @@ const validFilesOnly = (fileName) => {
  */
 const validPageFilesOnly = (fileName) => {
   if (
-      fileName=='pages/password_reset.html'||
-      fileName=='pages/password_reset.json'||
-      fileName=='pages/login.html'||
-      fileName=='pages/login.json'
-  ){
+    fileName == 'pages/password_reset.html' ||
+    fileName == 'pages/password_reset.json' ||
+    fileName == 'pages/login.html' ||
+    fileName == 'pages/login.json'
+  ) {
     return true;
   }
   return false;
@@ -98,28 +98,28 @@ const parseRepo = (repository = '') => {
  * Get pages tree.
  */
 const getPagesTree = (params) =>
-    new Promise((resolve, reject) => {
-        try {
-          bitbucket().get('repositories/{username}/{repo_slug}/src/{revision}/' + constants.PAGES_DIRECTORY, params, (err, res, response) => {
-          if (err && err.message == 'Status Code: 404') {
-        return resolve([]);
-      }
-      else if (err) {
-        return reject(err);
-      } else if (!res) {
-        return resolve([]);
-      }
-      const files = res.files
-              .filter(f => validPageFilesOnly(f.path));
-      files.forEach((elem, idx) => {
-        files[idx].path = elem.path
+  new Promise((resolve, reject) => {
+    try {
+      bitbucket().get('repositories/{username}/{repo_slug}/src/{revision}/' + constants.PAGES_DIRECTORY, params, (err, res, response) => {
+        if (err && err.message == 'Status Code: 404') {
+          return resolve([]);
+        }
+        else if (err) {
+          return reject(err);
+        } else if (!res) {
+          return resolve([]);
+        }
+        const files = res.files
+          .filter(f => validPageFilesOnly(f.path));
+        files.forEach((elem, idx) => {
+          files[idx].path = elem.path
+        });
+        return resolve(files);
       });
-      return resolve(files);
-      });
-      } catch (e) {
-        reject(e);
-      }
-    });
+    } catch (e) {
+      reject(e);
+    }
+  });
 
 /*
  * Get rules tree.
@@ -362,34 +362,37 @@ const downloadPage = (repository, branch, pageName, page, shaToken) => {
     name: pageName
   };
   const downloads = [];
-  if(page.file)
-  downloads.push(downloadFile(repository, branch, page.file, shaToken)
+  if (page.file)
+    downloads.push(downloadFile(repository, branch, page.file, shaToken)
       .then(file => {
         currentPage.contents = file.contents;
       }));
   return Promise.all(downloads)
-      .then(() => currentPage);
+    .then(() => currentPage);
 };
 
 /*
  * Get all pages.
  */
 const getPages = (repository, branch, files, shaToken) => {
-    const pages = {};
-    // Determine if we have the script, the metadata or both.
-    _.filter(files, f => isPage(f.path)).forEach(file => {
-        let pageName = path.parse(file.path).name;
-        let ext = path.parse(file.path).ext;
-        const index = pageName+ext;
-        pages[index] = pages[pageName] || {};
-        pages[index].file = file;
-        pages[index].contents = null;
-        pages[index].sha = file.sha;
-        pages[index].path = file.path;
-        if(ext!='json')
-        pages[index].meta = path.parse(file.path).name+'.json';
-    });
-    return Promise.map(Object.keys(pages), (pageName) => downloadPage(repository, branch, pageName, pages[pageName], shaToken), {concurrency: 2});
+  const pages = {};
+  // Determine if we have the script, the metadata or both.
+  _.filter(files, f => isPage(f.path)).forEach(file => {
+    const pageName = path.parse(file.path).name;
+    const ext = path.parse(file.path).ext;
+    const index = pageName + ext;
+
+    pages[index] = pages[pageName] || {};
+    pages[index].file = file;
+    pages[index].contents = null;
+    pages[index].sha = file.sha;
+    pages[index].path = file.path;
+
+    if (ext != 'json') {
+      pages[index].meta = path.parse(file.path).name + '.json';
+    }
+  });
+  return Promise.map(Object.keys(pages), (pageName) => downloadPage(repository, branch, pageName, pages[pageName], shaToken), {concurrency: 2});
 };
 
 /*
