@@ -21,7 +21,8 @@
     "extension:size": "NODE_ENV=production webpack -p --config ./build/extension/webpack.config.js --json > ./build/extension/bundle-size.json && node ./build/extension/bundle-size.js",
     "build": "npm run clean && npm run client:build && npm run extension:build && npm run extension:bundle",
     "win-build": "set NODE_ENV=production && npm run clean && npm run win-client:build && npm run win-extension:build && npm run win-extension:bundle",
-    "tag": "git tag $npm_package_version && git push --tags"
+    "tag": "git tag $npm_package_version && git push --tags",
+    "lint:js": "eslint --ignore-path .gitignore ."
   },
   "keywords": [
     "auth0"
