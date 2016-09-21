@@ -10,7 +10,6 @@ export default () => {
     audience: () => `https://${config('AUTH0_DOMAIN')}/api/v2/`
   };
 
-  const middleware = auth0(options);
   return (req, res, next) => {
     const protocol = 'https';
     const pathname = url.parse(req.originalUrl).pathname.replace(req.path, '');
@@ -20,7 +19,12 @@ export default () => {
       pathname
     });
 
-    options.clientId = baseUrl;
-    return middleware(req, res, next);
+    return auth0({
+      credentialsRequired: false,
+      clientName: 'GitHub Deployments',
+      audience:   () => `https://${config('AUTH0_DOMAIN')}/api/v2/`,
+      clientId:   baseUrl,
+      rootTenantAuthority: req.webtaskContext.data.AUTH0_RTA
+    })(req, res, next);
   };
 };
