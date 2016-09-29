@@ -21,7 +21,7 @@ export default () => {
 
     return auth0({
       credentialsRequired: false,
-      clientName: 'GitHub Deployments',
+      clientName: 'Bitbucket Deployments',
       audience:   () => `https://${config('AUTH0_DOMAIN')}/api/v2/`,
       clientId:   baseUrl,
       rootTenantAuthority: req.webtaskContext.data.AUTH0_RTA
