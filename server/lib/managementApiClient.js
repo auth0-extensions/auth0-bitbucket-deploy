@@ -7,7 +7,7 @@ import config from './config';
 
 let auth0 = require('auth0');
 if (config('HOSTING_ENV') === 'webtask') {
-  auth0 = require('auth0@2.0.0');
+  auth0 = require('auth0@2.4.0');
 }
 
 export const getAccessToken = Promise.promisify(

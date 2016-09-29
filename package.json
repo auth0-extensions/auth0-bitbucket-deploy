@@ -1,6 +1,6 @@
 {
   "name": "auth0-bitbucket-deploy-extension",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Auth0 Bitbucket Deployment Extension",
   "engines": {
     "node": "5.9.0"
@@ -32,7 +32,7 @@
   "license": "MIT",
   "dependencies": {
     "async": "^1.5.2",
-    "auth0": "^2.3.0",
+    "auth0": "^2.4.0",
     "auth0-oauth2-express": "^1.1.8",
     "babel": "^6.5.2",
     "babel-core": "^6.9.1",
