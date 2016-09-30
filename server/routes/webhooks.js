@@ -5,10 +5,10 @@ import deploy from '../lib/deploy';
 
 import { bitbucketWebhook } from '../lib/middlewares';
 
-export default () => {
+export default (storage) => {
   const activeBranch = config('BITBUCKET_BRANCH');
 
-  const webhooks = express.Router();
+  const webhooks = express.Router(); // eslint-disable-line new-cap
   webhooks.post('/deploy/:secret?', bitbucketWebhook(), (req, res) => {
     const { id, branch, repository, user, sha } = req.webhook;
 
@@ -25,7 +25,7 @@ export default () => {
     res.status(200).json();
 
     // Deploy the changes.
-    return deploy(req.storage, id, branch, repository, sha, user, req.auth0);
+    return deploy(storage, id, branch, repository, sha, user, req.auth0);
   });
 
   return webhooks;

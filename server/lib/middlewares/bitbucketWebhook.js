@@ -1,4 +1,4 @@
-import { ArgumentError } from '../errors';
+import { ArgumentError } from 'auth0-extension-tools';
 import config from '../config';
 
 const parse = (headers, { push = {}, repository = {}, actor = {} }) => {
@@ -19,7 +19,7 @@ const parse = (headers, { push = {}, repository = {}, actor = {} }) => {
       commits: push.changes[0].commits,
       repository: repository.full_name,
       user: actor.display_name,
-      diff: diff,
+      diff,
       sha: details.target.hash
     };
   } else {
@@ -51,6 +51,6 @@ module.exports = () => (req, res, next) => {
     return next(new ArgumentError('The Extension Secret is incorrect.'));
   }
 
-  req.webhook = parse(req.headers, req.body);
+  req.webhook = parse(req.headers, req.body); // eslint-disable-line no-param-reassign
   return next();
 };
