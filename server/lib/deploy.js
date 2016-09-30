@@ -1,7 +1,7 @@
 import { deploy as sourceDeploy } from 'auth0-source-control-extension-tools';
 
 import config from '../lib/config';
-import { getChanges } from './bitbucket';
+import getChanges from './bitbucket';
 
 export default (storage, id, branch, repository, sha, user, client) => {
   const context = {

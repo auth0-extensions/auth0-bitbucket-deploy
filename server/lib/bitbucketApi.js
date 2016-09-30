@@ -21,7 +21,7 @@ function Bitbucket(options) {
   this.request = request;
 }
 
-Bitbucket.prototype.buildEndpoint = (path, params) => {
+Bitbucket.prototype.buildEndpoint = function buildEndpoint(path, params) {
   let url = `${this.options.rest_base}${this.options.rest_path}${this.options.rest_version}/${path}`;
 
   _.forEach(params, (param, key) => {
@@ -34,7 +34,7 @@ Bitbucket.prototype.buildEndpoint = (path, params) => {
   };
 };
 
-Bitbucket.prototype.request = (method, path, params, callback) => {
+Bitbucket.prototype.doRequest = function doRequest(method, path, params, callback) {
   if (typeof params === 'function') {
     callback = params; // eslint-disable-line no-param-reassign
     params = {}; // eslint-disable-line no-param-reassign
@@ -83,12 +83,20 @@ Bitbucket.prototype.request = (method, path, params, callback) => {
   }).auth(this.options.user_name, this.options.password, true);
 };
 
-Bitbucket.prototype.get = (url, params, callback) => this.request('get', url, params, callback);
+Bitbucket.prototype.get = function get(url, params, callback) {
+  return this.doRequest('get', url, params, callback);
+};
 
-Bitbucket.prototype.post = (url, params, callback) => this.request('post', url, params, callback);
+Bitbucket.prototype.post = function post(url, params, callback) {
+  return this.doRequest('post', url, params, callback);
+};
 
-Bitbucket.prototype.put = (url, params, callback) => this.request('put', url, params, callback);
+Bitbucket.prototype.put = function put(url, params, callback) {
+  return this.doRequest('put', url, params, callback);
+};
 
-Bitbucket.prototype.delete = (url, params, callback) => this.request('delete', url, params, callback);
+Bitbucket.prototype.delete = function del(url, params, callback) {
+  return this.doRequest('delete', url, params, callback);
+};
 
 module.exports = Bitbucket;
