@@ -5,12 +5,12 @@ import deploy from '../lib/deploy';
 
 import { bitbucketWebhook } from '../lib/middlewares';
 
-export default (storageContext) => {
+export default (storage) => {
   const activeBranch = config('BITBUCKET_BRANCH');
 
-  const webhooks = express.Router();
-  webhooks.post('/deploy/:secret?', bitbucketWebhook(), (req, res, next) => {
-    const { id, branch, repository, user, sha, diff } = req.webhook;
+  const webhooks = express.Router(); // eslint-disable-line new-cap
+  webhooks.post('/deploy/:secret?', bitbucketWebhook(), (req, res) => {
+    const { id, branch, repository, user, sha } = req.webhook;
 
     // Only accept push requests.
     if (req.webhook.event !== 'repo:push') {
@@ -22,10 +22,10 @@ export default (storageContext) => {
     }
 
     // Send response ASAP to prevent extra requests.
-    res.status(202).json({ message: `Request accepted, deployment started.` });
+    res.status(200).json();
 
     // Deploy the changes.
-    return deploy(storageContext, id, branch, repository, sha, user, diff);
+    return deploy(storage, id, branch, repository, sha, user, req.auth0);
   });
 
   return webhooks;

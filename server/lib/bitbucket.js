@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import path from 'path';
 import Promise from 'bluebird';
+import { constants, unifyDatabases, unifyScripts } from 'auth0-source-control-extension-tools';
 
 import config from './config';
-import bitbucketApi from './bitbucketApi';
+import BitbucketApi from './bitbucketApi';
 import logger from '../lib/logger';
-import * as constants from './constants';
 
 const bitbucket = () =>
-  new bitbucketApi({
+  new BitbucketApi({
     user_name: config('BITBUCKET_USER'),
     password: config('BITBUCKET_PASSWORD'),
     rest_base: 'https://api.bitbucket.org/',
@@ -18,13 +18,19 @@ const bitbucket = () =>
  * Check if a file is part of the rules folder.
  */
 const isRule = (fileName) =>
-  fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
+fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the database folder.
  */
 const isDatabaseConnection = (fileName) =>
-  fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+
+/*
+ * Check if a file is part of the pages folder.
+ */
+const isPage = (file) =>
+file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
 
 /*
  * Get the details of a database file script.
@@ -56,6 +62,13 @@ const validFilesOnly = (fileName) => {
   return false;
 };
 
+/**
+ * only current pages could be uploaded
+ * @param fileName
+ * @returns {boolean}
+ */
+const validPageFilesOnly = (fileName) => constants.PAGE_NAMES.indexOf(fileName) >= 0;
+
 /*
  * Parse the repository.
  */
@@ -63,14 +76,43 @@ const parseRepo = (repository = '') => {
   const parts = repository.split('/');
   if (parts.length === 2) {
     const [ user, repo ] = parts;
-    return {user, repo};
+    return { user, repo };
   } else if (parts.length === 5) {
     const [ , , , user, repo ] = parts;
-    return {user, repo};
+    return { user, repo };
   }
 
   throw new Error(`Invalid repository: ${repository}`);
 };
+
+/*
+ * Get pages tree.
+ */
+const getPagesTree = (params) =>
+  new Promise((resolve, reject) => {
+    try {
+      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.PAGES_DIRECTORY}`, params, (err, res) => {
+        if (err && err.message === 'Status Code: 404') {
+          return resolve([]);
+        } else if (err) {
+          return reject(err);
+        } else if (!res) {
+          return resolve([]);
+        }
+
+        const files = res.files
+          .filter(f => validPageFilesOnly(f.path));
+
+        files.forEach((elem, idx) => {
+          files[idx].path = elem.path;
+        });
+
+        return resolve(files);
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
 
 /*
  * Get rules tree.
@@ -78,20 +120,22 @@ const parseRepo = (repository = '') => {
 const getRulesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get('repositories/{username}/{repo_slug}/src/{revision}/' + constants.RULES_DIRECTORY, params, (err, res, response) => {
-        if (err && err.message == 'Status Code: 404') {
+      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.RULES_DIRECTORY}`, params, (err, res) => {
+        if (err && err.message === 'Status Code: 404') {
           return resolve([]);
-        }
-        else if (err) {
+        } else if (err) {
           return reject(err);
         } else if (!res) {
           return resolve([]);
         }
+
         const files = res.files
           .filter(f => validFilesOnly(f.path));
+
         files.forEach((elem, idx) => {
-          files[idx].path = elem.path
+          files[idx].path = elem.path;
         });
+
         return resolve(files);
       });
     } catch (e) {
@@ -102,10 +146,10 @@ const getRulesTree = (params) =>
 /*
  * Get connection files for one db connection
  */
-const getConnectionTreeByPath = (params, path) =>
+const getConnectionTreeByPath = (params, filePath) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get('repositories/{username}/{repo_slug}/src/{revision}/' + path, params, (err, res, response) => {
+      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${filePath}`, params, (err, res) => {
         if (err) {
           return reject(err);
         } else if (!res) {
@@ -115,8 +159,9 @@ const getConnectionTreeByPath = (params, path) =>
           .filter(f => validFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
-          files[idx].path = elem.path
+          files[idx].path = elem.path;
         });
+
         return resolve(files);
       });
     } catch (e) {
@@ -130,25 +175,26 @@ const getConnectionTreeByPath = (params, path) =>
 const getConnectionsTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get('repositories/{username}/{repo_slug}/src/{revision}/' + constants.DATABASE_CONNECTIONS_DIRECTORY, params, (err, res, response) => {
-        if (err && err.message == 'Status Code: 404') {
+      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.DATABASE_CONNECTIONS_DIRECTORY}`, params, (err, res) => {
+        if (err && err.message === 'Status Code: 404') {
           return resolve([]);
-        }
-        else if (err) {
+        } else if (err) {
           return reject(err);
         } else if (!res) {
           return resolve([]);
         }
+
         const subdirs = res.directories;
         const promisses = [];
         let files = [];
-        for (var i in subdirs) {
-          promisses.push(getConnectionTreeByPath(params, constants.DATABASE_CONNECTIONS_DIRECTORY + '/' + subdirs[i]).then(data => {
+
+        _.forEach(subdirs, (dir) => {
+          promisses.push(getConnectionTreeByPath(params, `${constants.DATABASE_CONNECTIONS_DIRECTORY}/${dir}`).then(data => {
             files = files.concat(data);
           }));
-        }
+        });
 
-        Promise.all(promisses)
+        return Promise.all(promisses)
           .then(() => resolve(files));
       });
     } catch (e) {
@@ -160,18 +206,19 @@ const getConnectionsTree = (params) =>
  * Get tree.
  */
 const getTree = (repository, branch, sha) => {
-  const {user, repo} = parseRepo(repository);
-  let params = {
-    'username': user,
-    'repo_slug': repo,
-    'revision': sha
+  const { user, repo } = parseRepo(repository);
+  const params = {
+    username: user,
+    repo_slug: repo,
+    revision: sha
   };
   const promises = {
     connections: getConnectionsTree(params),
-    rules: getRulesTree(params)
+    rules: getRulesTree(params),
+    pages: getPagesTree(params)
   };
   return Promise.props(promises)
-    .then((result) => (_.union(result.rules, result.connections)));
+    .then((result) => (_.union(result.rules, result.connections, result.pages)));
 };
 
 /*
@@ -179,15 +226,15 @@ const getTree = (repository, branch, sha) => {
  */
 const downloadFile = (repository, branch, file, shaToken) =>
   new Promise((resolve, reject) => {
-    const {user, repo} = parseRepo(repository);
-    let params = {
-      'username': user,
-      'repo_slug': repo,
-      'filename': file.path,
-      'revision': shaToken
+    const { user, repo } = parseRepo(repository);
+    const params = {
+      username: user,
+      repo_slug: repo,
+      filename: file.path,
+      revision: shaToken
     };
     const url = 'repositories/{username}/{repo_slug}/raw/{revision}/{filename}';
-    bitbucket().get(url, params, (err, data, response) => {
+    bitbucket().get(url, params, (err, data) => {
       if (err !== null) {
         logger.error(`Error downloading '${file.path}'`);
         logger.error(err);
@@ -207,7 +254,8 @@ const downloadFile = (repository, branch, file, shaToken) =>
  */
 const downloadRule = (repository, branch, ruleName, rule, shaToken) => {
   const currentRule = {
-    ...rule,
+    script: false,
+    metadata: false,
     name: ruleName
   };
 
@@ -216,14 +264,16 @@ const downloadRule = (repository, branch, ruleName, rule, shaToken) => {
   if (rule.script) {
     downloads.push(downloadFile(repository, branch, rule.scriptFile, shaToken)
       .then(file => {
-        currentRule.script = file.contents;
+        currentRule.script = true;
+        currentRule.scriptFile = file.contents;
       }));
   }
 
   if (rule.metadata) {
     downloads.push(downloadFile(repository, branch, rule.metadataFile, shaToken)
       .then(file => {
-        currentRule.metadata = file.contents;
+        currentRule.metadata = true;
+        currentRule.metadataFile = file.contents;
       }));
   }
 
@@ -253,7 +303,8 @@ const getRules = (repository, branch, files, shaToken) => {
   });
 
   // Download all rules.
-  return Promise.map(Object.keys(rules), (ruleName) => downloadRule(repository, branch, ruleName, rules[ruleName], shaToken), {concurrency: 2});
+  return Promise.map(Object.keys(rules), (ruleName) =>
+    downloadRule(repository, branch, ruleName, rules[ruleName], shaToken), { concurrency: 2 });
 };
 
 /*
@@ -270,8 +321,8 @@ const downloadDatabaseScript = (repository, branch, databaseName, scripts, shaTo
     downloads.push(downloadFile(repository, branch, script, shaToken)
       .then(file => {
         database.scripts.push({
-          stage: script.name,
-          contents: file.contents
+          name: script.name,
+          scriptFile: file.contents
         });
       })
     );
@@ -300,13 +351,70 @@ const getDatabaseScripts = (repository, branch, files, shaToken) => {
     }
   });
 
-  return Promise.map(Object.keys(databases), (databaseName) => downloadDatabaseScript(repository, branch, databaseName, databases[databaseName], shaToken), {concurrency: 2});
+  return Promise.map(Object.keys(databases), (databaseName) =>
+    downloadDatabaseScript(repository, branch, databaseName, databases[databaseName], shaToken), { concurrency: 2 });
+};
+
+/*
+ * Download a single page script.
+ */
+const downloadPage = (repository, branch, pageName, page, shaToken) => {
+  const downloads = [];
+  const currentPage = {
+    metadata: false,
+    name: pageName
+  };
+
+  if (page.file) {
+    downloads.push(downloadFile(repository, branch, page.file, shaToken)
+      .then(file => {
+        currentPage.htmlFile = file.contents;
+      }));
+  }
+
+  if (page.meta_file) {
+    downloads.push(downloadFile(repository, branch, page.meta_file, shaToken)
+      .then(file => {
+        currentPage.metadata = true;
+        currentPage.metadataFile = file.contents;
+      }));
+  }
+
+  return Promise.all(downloads)
+    .then(() => currentPage);
+};
+
+/*
+ * Get all pages.
+ */
+const getPages = (repository, branch, files, shaToken) => {
+  const pages = {};
+
+  // Determine if we have the script, the metadata or both.
+  _.filter(files, f => isPage(f.path)).forEach(file => {
+    const pageName = path.parse(file.path).name;
+    const ext = path.parse(file.path).ext;
+    pages[pageName] = pages[pageName] || {};
+
+    if (ext !== '.json') {
+      pages[pageName].file = file;
+      pages[pageName].sha = file.sha;
+      pages[pageName].path = file.path;
+    } else {
+      pages[pageName].meta_file = file;
+      pages[pageName].meta_sha = file.sha;
+      pages[pageName].meta_path = file.path;
+    }
+  });
+
+  return Promise.map(Object.keys(pages), (pageName) =>
+    downloadPage(repository, branch, pageName, pages[pageName], shaToken), { concurrency: 2 });
 };
 
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export const getChanges = (repository, branch, sha) =>
+export default (repository, branch, sha) =>
   getTree(repository, branch, sha)
     .then(files => {
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
@@ -316,12 +424,14 @@ export const getChanges = (repository, branch, sha) =>
 
       const promises = {
         rules: getRules(repository, branch, files, sha),
+        pages: getPages(repository, branch, files, sha),
         databases: getDatabaseScripts(repository, branch, files, sha)
       };
 
       return Promise.props(promises)
         .then((result) => ({
-          rules: result.rules,
-          databases: result.databases
+          rules: unifyScripts(result.rules),
+          databases: unifyDatabases(result.databases),
+          pages: unifyScripts(result.pages)
         }));
     });
