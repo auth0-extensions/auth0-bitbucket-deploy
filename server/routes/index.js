@@ -25,6 +25,14 @@ const getRepository = () => {
   return repo;
 };
 
+const setNotified = (storage) =>
+  storage.read()
+    .then(data => {
+      data.isNotified = true; // eslint-disable-line no-param-reassign
+      return data;
+    })
+    .then(data => storage.write(data));
+
 export default (storage) => {
   const routes = router();
 
@@ -40,12 +48,44 @@ export default (storage) => {
   routes.use('/webhooks', webhooks(storage));
   routes.use('/api/rules', requireUser, rules(storage));
 
-  routes.get('/api/config', requireUser, (req, res) => {
-    res.json({
-      branch: config('BITBUCKET_BRANCH'),
-      secret: config('EXTENSION_SECRET'),
-      repository: getRepository()
-    });
+  routes.post('/api/notified', requireUser, (req, res, next) => {
+    setNotified(storage)
+      .then(() => res.status(204).send())
+      .catch(next);
+  });
+
+  routes.get('/api/config', requireUser, (req, res, next) => {
+    storage.read()
+      .then(data => {
+        if (data.isNotified) {
+          return {
+            showNotification: false,
+            branch: config('BITBUCKET_BRANCH'),
+            secret: config('EXTENSION_SECRET'),
+            repository: getRepository()
+          };
+        }
+
+        return req.auth0.rules.get()
+          .then(existingRules => {
+            const result = {
+              showNotification: false,
+              branch: config('BITBUCKET_BRANCH'),
+              secret: config('EXTENSION_SECRET'),
+              repository: getRepository()
+            };
+
+            if (existingRules && existingRules.length) {
+              result.showNotification = true;
+            } else {
+              setNotified(storage);
+            }
+
+            return result;
+          });
+      })
+      .then(data => res.json(data))
+      .catch(next);
   });
   routes.get('/api/deployments', requireUser, (req, res, next) =>
     storage.read()
