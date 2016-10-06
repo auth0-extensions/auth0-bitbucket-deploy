@@ -1,4 +1,4 @@
-import { fromJS, Map } from 'immutable';
+import { fromJS } from 'immutable';
 
 import * as constants from '../constants';
 import createReducer from '../utils/createReducer';
@@ -8,10 +8,10 @@ const initialState = {
   error: null,
   records: [],
   showNotification: false,
-  notificationType: 'success',
+  notificationType: 'success'
 };
 
-export const rules = createReducer(fromJS(initialState), {
+export const rules = createReducer(fromJS(initialState), { // eslint-disable-line import/prefer-default-export
   [constants.FETCH_RULES_PENDING]: (state) =>
     state.merge({
       loading: true,
@@ -28,11 +28,11 @@ export const rules = createReducer(fromJS(initialState), {
       error: null,
       records: fromJS(action.payload.data)
     }),
-  [constants.OPEN_RULE_NOTIFICATION]: (state, action) =>
+  [constants.OPEN_RULE_NOTIFICATION]: (state) =>
     state.merge({
       showNotification: true
     }),
-  [constants.CLOSE_RULE_NOTIFICATION]: (state, action) =>
+  [constants.CLOSE_RULE_NOTIFICATION]: (state) =>
     state.merge({
       showNotification: false
     })
