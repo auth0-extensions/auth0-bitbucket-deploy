@@ -1,24 +1,29 @@
-import {ArgumentError, UnauthorizedError} from '../errors';
+import { ArgumentError } from 'auth0-extension-tools';
 import config from '../config';
 
-const parse = (headers, {push = {}, repository = {}, actor = {}}) => {
+const parse = (headers, { push = {}, repository = {}, actor = {} }) => {
+  let data = {};
+
   if (push.changes && push.changes.length > 0 && push.changes[0].new) {
     const details = push.changes[0].new;
     let diff = null;
-    if (push.changes[0].links && push.changes[0].links.diff)
+
+    if (push.changes[0].links && push.changes[0].links.diff) {
       diff = push.changes[0].links.diff.href.split('/').pop();
-    return {
+    }
+
+    data = {
       id: headers['x-hook-uuid'],
       event: headers['x-event-key'],
       branch: (details.type === 'branch' || details.type === 'named_branch') ? details.name : '',
       commits: push.changes[0].commits,
       repository: repository.full_name,
       user: actor.display_name,
-      diff: diff,
+      diff,
       sha: details.target.hash
     };
   } else {
-    return {
+    data = {
       id: headers['x-hook-uuid'],
       event: headers['x-event-key'],
       branch: '',
@@ -27,8 +32,10 @@ const parse = (headers, {push = {}, repository = {}, actor = {}}) => {
       user: actor.display_name,
       sha: '',
       diff: ''
-    }
+    };
   }
+
+  return data;
 };
 
 module.exports = () => (req, res, next) => {
@@ -41,9 +48,9 @@ module.exports = () => (req, res, next) => {
   }
 
   if (!req.params.secret || req.params.secret !== config('EXTENSION_SECRET')) {
-    return next(new ArgumentError(`The Extension Secret is incorrect.`));
+    return next(new ArgumentError('The Extension Secret is incorrect.'));
   }
 
-  req.webhook = parse(req.headers, req.body);
+  req.webhook = parse(req.headers, req.body); // eslint-disable-line no-param-reassign
   return next();
 };
