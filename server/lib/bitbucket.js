@@ -18,13 +18,13 @@ const bitbucket = () =>
  * Check if a file is part of the rules folder.
  */
 const isRule = (fileName) =>
-fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
+  fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the database folder.
  */
 const isDatabaseConnection = (fileName) =>
-fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+  fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the pages folder.

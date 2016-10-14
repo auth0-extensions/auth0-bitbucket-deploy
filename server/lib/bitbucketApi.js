@@ -3,7 +3,9 @@ import request from 'request';
 import extend from 'deep-extend';
 
 function Bitbucket(options) {
-  if (!(this instanceof Bitbucket)) return new Bitbucket(options);
+  if (!(this instanceof Bitbucket)) {
+    return new Bitbucket(options);
+  }
 
   this.options = extend({
     user_name: null,

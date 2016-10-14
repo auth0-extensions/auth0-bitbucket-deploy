@@ -25,7 +25,9 @@
     "lint:js": "eslint --ignore-path .gitignore --ignore-pattern build --ignore-pattern webpack ."
   },
   "keywords": [
-    "auth0"
+    "auth0",
+    "extension",
+    "bitbucket"
   ],
   "author": "Sandrino Di Mattia",
   "license": "MIT",

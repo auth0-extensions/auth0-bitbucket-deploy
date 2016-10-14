@@ -22,7 +22,7 @@ export default (storage) => {
     }
 
     // Send response ASAP to prevent extra requests.
-    res.status(200).json();
+    res.status(202).json({ message: `Request accepted, deployment started.` });
 
     // Deploy the changes.
     return deploy(storage, id, branch, repository, sha, user, req.auth0);
