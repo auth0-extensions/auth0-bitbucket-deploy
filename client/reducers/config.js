@@ -45,10 +45,10 @@ export const config = createReducer(fromJS(initialState), { // eslint-disable-li
       loading: false
     }),
   [constants.CONFIRM_NOTIFICATION_PENDING]: (state) =>
-    state.merge({
-      loading: true,
-      showNotification: false
-    }),
+      state.merge({
+        loading: true,
+        showNotification: false
+      }),
   [constants.CONFIRM_NOTIFICATION_REJECTED]: (state) =>
     state.merge({
       loading: false

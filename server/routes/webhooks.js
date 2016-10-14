@@ -16,6 +16,7 @@ export default (storage) => {
     if (req.webhook.event !== 'repo:push') {
       return res.status(202).json({ message: `Request ignored, the '${req.webhook.event}' event is not supported.` });
     }
+
     // Only for the active branch.
     if (branch !== activeBranch) {
       return res.status(202).json({ message: `Request ignored, '${branch}' is not the active branch.` });

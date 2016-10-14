@@ -7,7 +7,7 @@ import { rules } from './rules';
 
 export default combineReducers({
   auth,
-  rules,
   config,
-  deployments
+  deployments,
+  rules
 });

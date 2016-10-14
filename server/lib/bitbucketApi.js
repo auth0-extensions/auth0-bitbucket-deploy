@@ -70,7 +70,7 @@ Bitbucket.prototype.doRequest = function doRequest(method, path, params, callbac
         if (typeof data.errors !== 'undefined') {
           callback(data.errors, data, response);
         } else if (response.statusCode !== 200) {
-          callback(new Error(`Status Code: ${response.statusCode}`), data, response);
+          callback(new Error(`Bitbucket Api - Status Code: ${response.statusCode}`), data, response);
         } else {
           callback(null, data, response);
         }
@@ -78,7 +78,7 @@ Bitbucket.prototype.doRequest = function doRequest(method, path, params, callbac
         if (response.statusCode === 200) {
           callback(null, data, response);
         } else {
-          callback(new Error(`Status Code: ${response.statusCode}`), data, response);
+          callback(new Error(`Bitbucket Api - Status Code: ${response.statusCode}`), data, response);
         }
       }
     }

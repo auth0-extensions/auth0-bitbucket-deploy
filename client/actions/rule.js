@@ -9,7 +9,6 @@ export function fetchAllRules() {
     type: constants.FETCH_RULES,
     payload: {
       promise: axios.get('/api/rules', {
-        timeout: 5000,
         responseType: 'json'
       })
     }
@@ -35,7 +34,6 @@ export function openNotification() {
     type: constants.OPEN_RULE_NOTIFICATION
   };
 }
-
 export function closeNotification() {
   return {
     type: constants.CLOSE_RULE_NOTIFICATION

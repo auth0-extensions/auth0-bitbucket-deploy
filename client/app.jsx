@@ -7,7 +7,6 @@ import { App } from './containers';
 import { loadCredentials } from './actions/auth';
 import configureStore from './store/configureStore';
 
-
 const showDevTools = (process.env.NODE_ENV !== 'production') ? require('./showDevTools') : null;
 
 // Make axios aware of the base path.
