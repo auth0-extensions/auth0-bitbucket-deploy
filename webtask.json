@@ -1,14 +1,14 @@
 {
   "title": "Bitbucket Deployments",
   "name": "auth0-bitbucket-deploy",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Hosted Pages, Rules and Custom Database Connections from Bitbucket.",
   "type": "application",
   "docsUrl": "https://auth0.com/docs/extensions/bitbucket-deploy",
   "logoUrl": "https://cdn.auth0.com/extensions/auth0-bitbucket-deploy/assets/logo.svg",
   "initialUrlPath": "/login",
-  "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Hosted Pages, Rules and Database Connection scripts from being deployed from GitLab to Auth0",
+  "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Hosted Pages, Rules and Database Connection scripts from being deployed from Bitbucket to Auth0",
   "repository": "https://github.com/auth0-extensions/auth0-bitbucket-deploy",
   "keywords": [
     "auth0",

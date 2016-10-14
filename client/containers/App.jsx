@@ -27,7 +27,7 @@ class App extends Component {
                         <a href={`${window.config.AUTH0_MANAGE_URL}/#/extensions`}>Extensions</a>
                       </li>
                     </ol>
-                    <h1 className="pull-left" style={{ paddingTop: '10px' }}>GitLab Integration</h1></div>
+                    <h1 className="pull-left" style={{ paddingTop: '10px' }}>Bitbucket Integration</h1></div>
                 </div>
                 <div className="widget-title title-with-nav-bars">
                   <ul className="nav nav-tabs">
