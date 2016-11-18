@@ -92,7 +92,7 @@ const getPagesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.PAGES_DIRECTORY}`, params, (err, res) => {
-        if (err && err.message === 'Status Code: 404') {
+        if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);
@@ -121,7 +121,7 @@ const getRulesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.RULES_DIRECTORY}`, params, (err, res) => {
-        if (err && err.message === 'Status Code: 404') {
+        if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);
@@ -176,7 +176,7 @@ const getConnectionsTree = (params) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.DATABASE_CONNECTIONS_DIRECTORY}`, params, (err, res) => {
-        if (err && err.message === 'Status Code: 404') {
+        if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);
@@ -205,7 +205,7 @@ const getConnectionsTree = (params) =>
 /*
  * Get tree.
  */
-const getTree = (repository, branch, sha) => {
+const getTree = (repository, branch, sha, progress) => {
   const { user, repo } = parseRepo(repository);
   const params = {
     username: user,
@@ -218,7 +218,14 @@ const getTree = (repository, branch, sha) => {
     pages: getPagesTree(params)
   };
   return Promise.props(promises)
-    .then((result) => (_.union(result.rules, result.connections, result.pages)));
+    .then((result) => (_.union(result.rules, result.connections, result.pages)))
+    .catch(err => {
+      if (progress && progress.log && err && err.report) {
+        progress.log(err.report);
+      }
+
+      return Promise.reject(err);
+    });
 };
 
 /*
@@ -414,8 +421,8 @@ const getPages = (repository, branch, files, shaToken) => {
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export default (repository, branch, sha) =>
-  getTree(repository, branch, sha)
+export default (repository, branch, sha, progress) =>
+  getTree(repository, branch, sha, progress)
     .then(files => {
       logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
         path: file.path,
@@ -429,7 +436,7 @@ export default (repository, branch, sha) =>
       };
 
       return Promise.props(promises)
-        .then((result) => ({
+        .then((result) => Promise.resolve({
           rules: unifyScripts(result.rules),
           databases: unifyDatabases(result.databases),
           pages: unifyScripts(result.pages)

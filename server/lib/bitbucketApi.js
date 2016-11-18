@@ -49,6 +49,17 @@ Bitbucket.prototype.doRequest = function doRequest(method, path, params, callbac
     url: endpoint.url
   };
 
+  const generateApiError = (statusCode, response = null) => {
+    const error = new Error(`Bitbucket Api Error when calling '${options.method.toUpperCase()} ${options.url}' (username: ${this.options.user_name})`);
+    error.statusCode = statusCode;
+    error.report = `status: ${statusCode}
+      user: ${this.options.user_name}
+      url: ${options.url}
+      method: ${options.method}
+      response: ${JSON.stringify(response)}`;
+    return error;
+  };
+
   // Pass url parameters if get
   if (method === 'get') {
     options.qs = endpoint.params;
@@ -70,7 +81,7 @@ Bitbucket.prototype.doRequest = function doRequest(method, path, params, callbac
         if (typeof data.errors !== 'undefined') {
           callback(data.errors, data, response);
         } else if (response.statusCode !== 200) {
-          callback(new Error(`Bitbucket Api - Status Code: ${response.statusCode}`), data, response);
+          callback(generateApiError(response.statusCode, response), data, response);
         } else {
           callback(null, data, response);
         }
@@ -78,7 +89,7 @@ Bitbucket.prototype.doRequest = function doRequest(method, path, params, callbac
         if (response.statusCode === 200) {
           callback(null, data, response);
         } else {
-          callback(new Error(`Bitbucket Api - Status Code: ${response.statusCode}`), data, response);
+          callback(generateApiError(response.statusCode, response), data, response);
         }
       }
     }
