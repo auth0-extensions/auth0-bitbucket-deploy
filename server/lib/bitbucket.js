@@ -92,7 +92,7 @@ const getPagesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.PAGES_DIRECTORY}`, params, (err, res) => {
-        if (err && err.message === 'Status Code: 404') {
+        if (err && err.message === 'Bitbucket API - Status Code: 404') {
           return resolve([]);
         } else if (err) {
           return reject(err);
@@ -121,7 +121,7 @@ const getRulesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.RULES_DIRECTORY}`, params, (err, res) => {
-        if (err && err.message === 'Status Code: 404') {
+        if (err && err.message === 'Bitbucket API - Status Code: 404') {
           return resolve([]);
         } else if (err) {
           return reject(err);
@@ -176,7 +176,7 @@ const getConnectionsTree = (params) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.DATABASE_CONNECTIONS_DIRECTORY}`, params, (err, res) => {
-        if (err && err.message === 'Status Code: 404') {
+        if (err && err.message === 'Bitbucket API - Status Code: 404') {
           return resolve([]);
         } else if (err) {
           return reject(err);
