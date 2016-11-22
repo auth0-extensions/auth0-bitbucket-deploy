@@ -5,7 +5,7 @@ import getChanges from './bitbucket';
 
 export default (storage, id, branch, repository, sha, user, client) => {
   const context = {
-    init: () => getChanges(repository, branch, sha)
+    init: (progress) => getChanges(repository, branch, sha, progress)
       .then(data => {
         context.pages = data.pages;
         context.rules = data.rules;
