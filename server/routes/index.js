@@ -38,11 +38,6 @@ export default (storage) => {
     clientSecret: config('AUTH0_CLIENT_SECRET')
   });
 
-  app.use(middlewares.managementApiClient({
-    domain: config('AUTH0_DOMAIN'),
-    clientId: config('AUTH0_CLIENT_ID'),
-    clientSecret: config('AUTH0_CLIENT_SECRET')
-  }));
   app.use(routes.dashboardAdmins({
     secret: config('EXTENSION_SECRET'),
     audience: 'urn:bitbucket-deploy',
