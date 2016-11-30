@@ -1,10 +1,10 @@
 import React, { PropTypes, Component } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import connectContainer from 'redux-static';
+import { Error, LoadingPanel } from 'auth0-extension-ui';
 
 import { ruleActions } from '../actions';
 
-import { Error, LoadingPanel } from '../components/Dashboard';
 import RulesTable from '../components/RulesTable';
 
 export default connectContainer(class extends Component {
