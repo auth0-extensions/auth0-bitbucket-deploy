@@ -50,7 +50,8 @@ Bitbucket.prototype.doRequest = function doRequest(method, path, params, callbac
   };
 
   const generateApiError = (statusCode, response = null) => {
-    const error = new Error(`Bitbucket Api Error when calling '${options.method.toUpperCase()} ${options.url}' (username: ${this.options.user_name})`);
+    const error = new Error(`Error ${statusCode} when calling '${options.method.toUpperCase()} ${options.url}' (username: ${this.options.user_name})`);
+    error.status = statusCode;
     error.statusCode = statusCode;
     error.report = `status: ${statusCode}
       user: ${this.options.user_name}
