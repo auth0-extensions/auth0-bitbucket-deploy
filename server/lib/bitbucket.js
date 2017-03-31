@@ -67,10 +67,7 @@ const validFilesOnly = (fileName) => {
  * @param fileName
  * @returns {boolean}
  */
-const validPageFilesOnly = (fileName) => {
-  
-  return isPage(fileName);
-};
+const validPageFilesOnly = (fileName) =>  isPage(fileName);
 
 /*
  * Parse the repository.
