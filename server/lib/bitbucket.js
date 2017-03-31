@@ -30,7 +30,7 @@ const isDatabaseConnection = (fileName) =>
  * Check if a file is part of the pages folder.
  */
 const isPage = (file) =>
-file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
+  file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
 
 /*
  * Get the details of a database file script.
@@ -67,7 +67,10 @@ const validFilesOnly = (fileName) => {
  * @param fileName
  * @returns {boolean}
  */
-const validPageFilesOnly = (fileName) => constants.PAGE_NAMES.indexOf(fileName) >= 0;
+const validPageFilesOnly = (fileName) => {
+  
+  return isPage(fileName);
+};
 
 /*
  * Parse the repository.
@@ -396,7 +399,6 @@ const downloadPage = (repository, branch, pageName, page, shaToken) => {
  */
 const getPages = (repository, branch, files, shaToken) => {
   const pages = {};
-
   // Determine if we have the script, the metadata or both.
   _.filter(files, f => isPage(f.path)).forEach(file => {
     const pageName = path.parse(file.path).name;
