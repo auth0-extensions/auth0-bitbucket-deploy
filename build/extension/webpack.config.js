@@ -40,10 +40,8 @@ module.exports = externalModules.then((externals) => {
   // Additional dependencies that are available in webtask.
   externals.compatible.auth0 = 'auth0@2.4.0';
   externals.compatible['auth0-oauth2-express'] = 'auth0-oauth2-express@1.1.5';
+  externals.compatible['jwks-rsa'] = 'jwks-rsa@1.1.1';
   externals.compatible.nconf = true;
-  externals.compatible['auth0-extension-express-tools'] = 'auth0-extension-express-tools@1.0.1';
-  externals.compatible['lru-memoizer'] = 'lru-memoizer@1.10.0';
-  externals.compatible['auth0-extension-tools'] = 'auth0-extension-tools@1.0.0';
   externals.compatible['node-uuid'] = true;
   externals.compatible.jade = true;
   externals.compatible.jsonwebtoken = true;
@@ -61,7 +59,6 @@ module.exports = externalModules.then((externals) => {
     } else {
       externals.compatible[k] = `commonjs ${externals.compatible[k]}`;
     }
-    console.log('External:', externals.compatible[k]);
   });
 
   return {
@@ -79,7 +76,10 @@ module.exports = externalModules.then((externals) => {
         {
           test: /\.jsx?$/,
           loader: 'babel',
-          exclude: path.join(__dirname, '../../node_modules/')
+          exclude(modulePath) {
+            return /node_modules/.test(modulePath) &&
+              !/node_modules\/express-conditional-middleware/.test(modulePath);
+          }
         },
         { test: /\.json$/, loader: 'json' }
       ]
