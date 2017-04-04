@@ -1,3 +1,4 @@
+import join from 'url-join';
 import path from 'path';
 import morgan from 'morgan';
 import Express from 'express';
@@ -30,6 +31,9 @@ module.exports = (configProvider, storageProvider) => {
   app.use(bodyParser.urlencoded({ extended: false }));
 
   // Configure authentication.
+  app.get('/login', (req, res) => {
+    res.redirect(join(config('PUBLIC_WT_URL'), '/admins/login'));
+  });
   app.use(routes.dashboardAdmins({
     secret: config('EXTENSION_SECRET'),
     audience: 'urn:bitbucket-deploy',
