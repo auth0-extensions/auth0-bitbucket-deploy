@@ -7,7 +7,7 @@
   "type": "application",
   "docsUrl": "https://auth0.com/docs/extensions/bitbucket-deploy",
   "logoUrl": "https://cdn.auth0.com/extensions/auth0-bitbucket-deploy/assets/logo.svg",
-  "initialUrlPath": "/admins/login",
+  "initialUrlPath": "/login",
   "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Hosted Pages, Rules and Database Connection scripts from being deployed from Bitbucket to Auth0",
   "repository": "https://github.com/auth0-extensions/auth0-bitbucket-deploy",
   "keywords": [
