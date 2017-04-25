@@ -2,6 +2,7 @@ import _ from 'lodash';
 import path from 'path';
 import Promise from 'bluebird';
 import { constants, unifyDatabases, unifyScripts } from 'auth0-source-control-extension-tools';
+import { ArgumentError } from 'auth0-extension-tools';
 
 import config from './config';
 import BitbucketApi from './bitbucketApi';
@@ -18,19 +19,19 @@ const bitbucket = () =>
  * Check if a file is part of the rules folder.
  */
 const isRule = (fileName) =>
-  fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
+fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the database folder.
  */
 const isDatabaseConnection = (fileName) =>
-  fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the pages folder.
  */
 const isPage = (file) =>
-  file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
+file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
 
 /*
  * Get the details of a database file script.
@@ -67,7 +68,7 @@ const validFilesOnly = (fileName) => {
  * @param fileName
  * @returns {boolean}
  */
-const validPageFilesOnly = (fileName) =>  isPage(fileName);
+const validPageFilesOnly = (fileName) => isPage(fileName);
 
 /*
  * Parse the repository.
@@ -82,8 +83,25 @@ const parseRepo = (repository = '') => {
     return { user, repo };
   }
 
-  throw new Error(`Invalid repository: ${repository}`);
+  throw new ArgumentError(`Invalid repository: ${repository}`);
 };
+
+const checkRepo = (repository) =>
+  new Promise((resolve, reject) => {
+    try {
+      const { user, repo } = parseRepo(repository);
+
+      bitbucket().get('repositories/{username}/{repo_slug}', { username: user, repo_slug: repo }, (err) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve({ user, repo });
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
 
 /*
  * Get pages tree.
@@ -205,8 +223,9 @@ const getConnectionsTree = (params) =>
 /*
  * Get tree.
  */
-const getTree = (repository, branch, sha, progress) => {
-  const { user, repo } = parseRepo(repository);
+const getTree = (parsedRepo, branch, sha, progress) => {
+  const { user, repo } = parsedRepo;
+
   const params = {
     username: user,
     repo_slug: repo,
@@ -231,9 +250,9 @@ const getTree = (repository, branch, sha, progress) => {
 /*
  * Download a single file.
  */
-const downloadFile = (repository, branch, file, shaToken) =>
+const downloadFile = (parsedRepo, branch, file, shaToken) =>
   new Promise((resolve, reject) => {
-    const { user, repo } = parseRepo(repository);
+    const { user, repo } = parsedRepo;
     const params = {
       username: user,
       repo_slug: repo,
@@ -259,7 +278,7 @@ const downloadFile = (repository, branch, file, shaToken) =>
 /*
  * Download a single rule with its metadata.
  */
-const downloadRule = (repository, branch, ruleName, rule, shaToken) => {
+const downloadRule = (parsedRepo, branch, ruleName, rule, shaToken) => {
   const currentRule = {
     script: false,
     metadata: false,
@@ -269,7 +288,7 @@ const downloadRule = (repository, branch, ruleName, rule, shaToken) => {
   const downloads = [];
 
   if (rule.script) {
-    downloads.push(downloadFile(repository, branch, rule.scriptFile, shaToken)
+    downloads.push(downloadFile(parsedRepo, branch, rule.scriptFile, shaToken)
       .then(file => {
         currentRule.script = true;
         currentRule.scriptFile = file.contents;
@@ -277,7 +296,7 @@ const downloadRule = (repository, branch, ruleName, rule, shaToken) => {
   }
 
   if (rule.metadata) {
-    downloads.push(downloadFile(repository, branch, rule.metadataFile, shaToken)
+    downloads.push(downloadFile(parsedRepo, branch, rule.metadataFile, shaToken)
       .then(file => {
         currentRule.metadata = true;
         currentRule.metadataFile = file.contents;
@@ -291,7 +310,7 @@ const downloadRule = (repository, branch, ruleName, rule, shaToken) => {
 /*
  * Determine if we have the script, the metadata or both.
  */
-const getRules = (repository, branch, files, shaToken) => {
+const getRules = (parsedRepo, branch, files, shaToken) => {
   // Rules object.
   const rules = {};
 
@@ -311,13 +330,13 @@ const getRules = (repository, branch, files, shaToken) => {
 
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) =>
-    downloadRule(repository, branch, ruleName, rules[ruleName], shaToken), { concurrency: 2 });
+    downloadRule(parsedRepo, branch, ruleName, rules[ruleName], shaToken), { concurrency: 2 });
 };
 
 /*
  * Download a single database script.
  */
-const downloadDatabaseScript = (repository, branch, databaseName, scripts, shaToken) => {
+const downloadDatabaseScript = (parsedRepo, branch, databaseName, scripts, shaToken) => {
   const database = {
     name: databaseName,
     scripts: []
@@ -325,7 +344,7 @@ const downloadDatabaseScript = (repository, branch, databaseName, scripts, shaTo
 
   const downloads = [];
   scripts.forEach(script => {
-    downloads.push(downloadFile(repository, branch, script, shaToken)
+    downloads.push(downloadFile(parsedRepo, branch, script, shaToken)
       .then(file => {
         database.scripts.push({
           name: script.name,
@@ -342,7 +361,7 @@ const downloadDatabaseScript = (repository, branch, databaseName, scripts, shaTo
 /*
  * Get all database scripts.
  */
-const getDatabaseScripts = (repository, branch, files, shaToken) => {
+const getDatabaseScripts = (parsedRepo, branch, files, shaToken) => {
   const databases = {};
 
   // Determine if we have the script, the metadata or both.
@@ -359,13 +378,13 @@ const getDatabaseScripts = (repository, branch, files, shaToken) => {
   });
 
   return Promise.map(Object.keys(databases), (databaseName) =>
-    downloadDatabaseScript(repository, branch, databaseName, databases[databaseName], shaToken), { concurrency: 2 });
+    downloadDatabaseScript(parsedRepo, branch, databaseName, databases[databaseName], shaToken), { concurrency: 2 });
 };
 
 /*
  * Download a single page script.
  */
-const downloadPage = (repository, branch, pageName, page, shaToken) => {
+const downloadPage = (parsedRepo, branch, pageName, page, shaToken) => {
   const downloads = [];
   const currentPage = {
     metadata: false,
@@ -373,14 +392,14 @@ const downloadPage = (repository, branch, pageName, page, shaToken) => {
   };
 
   if (page.file) {
-    downloads.push(downloadFile(repository, branch, page.file, shaToken)
+    downloads.push(downloadFile(parsedRepo, branch, page.file, shaToken)
       .then(file => {
         currentPage.htmlFile = file.contents;
       }));
   }
 
   if (page.meta_file) {
-    downloads.push(downloadFile(repository, branch, page.meta_file, shaToken)
+    downloads.push(downloadFile(parsedRepo, branch, page.meta_file, shaToken)
       .then(file => {
         currentPage.metadata = true;
         currentPage.metadataFile = file.contents;
@@ -394,7 +413,7 @@ const downloadPage = (repository, branch, pageName, page, shaToken) => {
 /*
  * Get all pages.
  */
-const getPages = (repository, branch, files, shaToken) => {
+const getPages = (parsedRepo, branch, files, shaToken) => {
   const pages = {};
   // Determine if we have the script, the metadata or both.
   _.filter(files, f => isPage(f.path)).forEach(file => {
@@ -414,30 +433,31 @@ const getPages = (repository, branch, files, shaToken) => {
   });
 
   return Promise.map(Object.keys(pages), (pageName) =>
-    downloadPage(repository, branch, pageName, pages[pageName], shaToken), { concurrency: 2 });
+    downloadPage(parsedRepo, branch, pageName, pages[pageName], shaToken), { concurrency: 2 });
 };
 
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
 export default (repository, branch, sha, progress) =>
-  getTree(repository, branch, sha, progress)
-    .then(files => {
-      logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
-        path: file.path,
-        sha: file.path
-      })), null, 2)}`);
+  checkRepo(repository)
+    .then((parsedRepo) => getTree(parsedRepo, branch, sha, progress)
+      .then(files => {
+        logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
+          path: file.path,
+          sha: file.path
+        })), null, 2)}`);
 
-      const promises = {
-        rules: getRules(repository, branch, files, sha),
-        pages: getPages(repository, branch, files, sha),
-        databases: getDatabaseScripts(repository, branch, files, sha)
-      };
+        const promises = {
+          rules: getRules(parsedRepo, branch, files, sha),
+          pages: getPages(parsedRepo, branch, files, sha),
+          databases: getDatabaseScripts(parsedRepo, branch, files, sha)
+        };
 
-      return Promise.props(promises)
-        .then((result) => Promise.resolve({
-          rules: unifyScripts(result.rules),
-          databases: unifyDatabases(result.databases),
-          pages: unifyScripts(result.pages)
-        }));
-    });
+        return Promise.props(promises)
+          .then((result) => Promise.resolve({
+            rules: unifyScripts(result.rules),
+            databases: unifyDatabases(result.databases),
+            pages: unifyScripts(result.pages)
+          }));
+      }));
