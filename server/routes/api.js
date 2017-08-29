@@ -32,7 +32,7 @@ export default (storage) => {
     credentialsRequired: true,
     secret: config('EXTENSION_SECRET'),
     audience: 'urn:bitbucket-deploy',
-    baseUrl: config('PUBLIC_WT_URL'),
+    baseUrl: config('WT_URL'),
     onLoginSuccess: (req, res, next) => {
       next();
     }

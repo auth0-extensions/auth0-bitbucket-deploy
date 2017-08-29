@@ -32,14 +32,14 @@ module.exports = (configProvider, storageProvider) => {
 
   // Configure authentication.
   app.get('/login', (req, res) => {
-    res.redirect(join(config('PUBLIC_WT_URL'), '/admins/login'));
+    res.redirect(join(config('WT_URL'), '/admins/login'));
   });
   app.use(routes.dashboardAdmins({
     secret: config('EXTENSION_SECRET'),
     audience: 'urn:bitbucket-deploy',
     rta: config('AUTH0_RTA').replace('https://', ''),
     domain: config('AUTH0_DOMAIN'),
-    baseUrl: config('PUBLIC_WT_URL'),
+    baseUrl: config('WT_URL'),
     clientName: 'Bitbucket Deploy Extension',
     urlPrefix: '/admins',
     sessionStorageKey: 'bitbucket-deploy:apiToken',
