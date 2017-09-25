@@ -1,4 +1,5 @@
 import { Router as router } from 'express';
+import { managementApi } from 'auth0-extension-tools';
 import { middlewares } from 'auth0-extension-express-tools';
 
 import config from '../lib/config';
@@ -13,7 +14,14 @@ export default () => {
 
   hooks.delete('/on-uninstall', (req, res) => {
     logger.debug('Uninstall running...');
-    req.auth0.clients.delete({ client_id: config('AUTH0_CLIENT_ID') })
+    const clientId = config('AUTH0_CLIENT_ID');
+    const options = {
+      domain: config('AUTH0_DOMAIN'),
+      clientSecret: config('AUTH0_CLIENT_SECRET'),
+      clientId
+    };
+    managementApi.getClient(options)
+      .then(auth0 => auth0.clients.delete({ client_id: clientId }))
       .then(() => {
         logger.debug(`Deleted client ${config('AUTH0_CLIENT_ID')}`);
         res.sendStatus(204);
