@@ -1,4 +1,4 @@
-import join from 'url-join';
+import join from 'url-join'; // eslint-disable-line
 import path from 'path';
 import morgan from 'morgan';
 import Express from 'express';

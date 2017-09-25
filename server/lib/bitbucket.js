@@ -5,8 +5,10 @@ import { constants, unifyDatabases, unifyScripts } from 'auth0-source-control-ex
 import { ArgumentError } from 'auth0-extension-tools';
 
 import config from './config';
-import BitbucketApi from './bitbucketApi';
 import logger from '../lib/logger';
+
+const BitbucketApi = require('./bitbucketApi');
+
 
 const bitbucket = () =>
   new BitbucketApi({
