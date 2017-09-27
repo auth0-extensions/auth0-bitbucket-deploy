@@ -4,10 +4,9 @@ import Promise from 'bluebird';
 import { constants, unifyDatabases, unifyScripts } from 'auth0-source-control-extension-tools';
 import { ArgumentError } from 'auth0-extension-tools';
 
+import BitbucketApi from './bitbucketApi';
 import config from './config';
 import logger from '../lib/logger';
-
-const BitbucketApi = require('./bitbucketApi');
 
 
 const bitbucket = () =>
