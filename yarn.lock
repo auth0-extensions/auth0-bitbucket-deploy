@@ -206,7 +206,7 @@ async-each@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-each/-/async-each-1.0.1.tgz#19d386a1d9edc6e7c1c85d388aedbcc56d33602d"
 
-async@2.1.2:
+async@2.1.2, async@^2.0.0-rc.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/async/-/async-2.1.2.tgz#612a4ab45ef42a70cde806bad86ee6db047e8385"
   dependencies:
@@ -219,12 +219,6 @@ async@^0.9.0:
 async@^1.3.0, async@^1.4.0, async@^1.5.0, async@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
-
-async@^2.0.0-rc.2:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.1.4.tgz#2d2160c7788032e4dd6cbe2502f1f9a2c8f6cde4"
-  dependencies:
-    lodash "^4.14.0"
 
 async@~0.2.6:
   version "0.2.10"
@@ -259,7 +253,7 @@ auth0-extension-express-tools@1.1.0:
     jwt-decode "^2.1.0"
     webtask-tools "^3.1.1"
 
-auth0-extension-tools@1.2.1:
+auth0-extension-tools@1.2.1, auth0-extension-tools@^1.0.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/auth0-extension-tools/-/auth0-extension-tools-1.2.1.tgz#0ad36e725759cb156dd87870e64258809d54e71d"
   dependencies:
@@ -283,21 +277,6 @@ auth0-extension-tools@^0.14.0:
     auth0 "^2.3.1"
     bluebird "^3.4.1"
     jsonwebtoken "^7.1.9"
-    lodash "^4.15.0"
-    lru-memoizer "^1.7.0"
-    ms "^0.7.1"
-    node-uuid "^1.4.7"
-    superagent "^2.2.0"
-    webtask-tools "^2.2.0"
-
-auth0-extension-tools@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/auth0-extension-tools/-/auth0-extension-tools-1.0.0.tgz#d556f94beda137bbb8e2a4f70a00b05ffd0ae682"
-  dependencies:
-    auth0 "^2.3.1"
-    bluebird "^3.4.1"
-    jsonwebtoken "^7.1.9"
-    jwks-rsa "^1.1.1"
     lodash "^4.15.0"
     lru-memoizer "^1.7.0"
     ms "^0.7.1"
@@ -382,21 +361,21 @@ axios@^0.15.0:
   dependencies:
     follow-redirects "1.0.0"
 
-babel-code-frame@^6.11.0, babel-code-frame@^6.16.0:
-  version "6.16.0"
-  resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.16.0.tgz#f90e60da0862909d3ce098733b5d3987c97cb8de"
-  dependencies:
-    chalk "^1.1.0"
-    esutils "^2.0.2"
-    js-tokens "^2.0.0"
-
-babel-code-frame@^6.22.0:
+babel-code-frame@^6.11.0, babel-code-frame@^6.22.0:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.22.0.tgz#027620bee567a88c32561574e7fd0801d33118e4"
   dependencies:
     chalk "^1.1.0"
     esutils "^2.0.2"
     js-tokens "^3.0.0"
+
+babel-code-frame@^6.16.0:
+  version "6.16.0"
+  resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.16.0.tgz#f90e60da0862909d3ce098733b5d3987c97cb8de"
+  dependencies:
+    chalk "^1.1.0"
+    esutils "^2.0.2"
+    js-tokens "^2.0.0"
 
 babel-core@^6.18.0, babel-core@^6.5.1, babel-core@^6.9.1:
   version "6.18.2"
@@ -570,21 +549,12 @@ babel-helpers@^6.16.0:
     babel-runtime "^6.0.0"
     babel-template "^6.16.0"
 
-babel-loader@6.4.1:
+babel-loader@6.4.1, babel-loader@^6.2.2:
   version "6.4.1"
   resolved "https://registry.yarnpkg.com/babel-loader/-/babel-loader-6.4.1.tgz#0b34112d5b0748a8dcdbf51acf6f9bd42d50b8ca"
   dependencies:
     find-cache-dir "^0.1.1"
     loader-utils "^0.2.16"
-    mkdirp "^0.5.1"
-    object-assign "^4.0.1"
-
-babel-loader@^6.2.2:
-  version "6.2.8"
-  resolved "https://registry.yarnpkg.com/babel-loader/-/babel-loader-6.2.8.tgz#30d7183aef60afc140b36443676b7acb4c12ac9c"
-  dependencies:
-    find-cache-dir "^0.1.1"
-    loader-utils "^0.2.11"
     mkdirp "^0.5.1"
     object-assign "^4.0.1"
 
@@ -1108,21 +1078,7 @@ babel-template@^6.14.0, babel-template@^6.15.0, babel-template@^6.16.0, babel-te
     babylon "^6.11.0"
     lodash "^4.2.0"
 
-babel-traverse@^6.16.0, babel-traverse@^6.18.0:
-  version "6.19.0"
-  resolved "https://registry.yarnpkg.com/babel-traverse/-/babel-traverse-6.19.0.tgz#68363fb821e26247d52a519a84b2ceab8df4f55a"
-  dependencies:
-    babel-code-frame "^6.16.0"
-    babel-messages "^6.8.0"
-    babel-runtime "^6.9.0"
-    babel-types "^6.19.0"
-    babylon "^6.11.0"
-    debug "^2.2.0"
-    globals "^9.0.0"
-    invariant "^2.2.0"
-    lodash "^4.2.0"
-
-babel-traverse@^6.23.1:
+babel-traverse@^6.16.0, babel-traverse@^6.23.1:
   version "6.24.1"
   resolved "https://registry.yarnpkg.com/babel-traverse/-/babel-traverse-6.24.1.tgz#ab36673fd356f9a0948659e7b338d5feadb31695"
   dependencies:
@@ -1136,20 +1092,34 @@ babel-traverse@^6.23.1:
     invariant "^2.2.0"
     lodash "^4.2.0"
 
-babel-types@^6.13.0, babel-types@^6.16.0, babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.8.0, babel-types@^6.9.0:
+babel-traverse@^6.18.0:
   version "6.19.0"
-  resolved "https://registry.yarnpkg.com/babel-types/-/babel-types-6.19.0.tgz#8db2972dbed01f1192a8b602ba1e1e4c516240b9"
+  resolved "https://registry.yarnpkg.com/babel-traverse/-/babel-traverse-6.19.0.tgz#68363fb821e26247d52a519a84b2ceab8df4f55a"
   dependencies:
-    babel-runtime "^6.9.1"
-    esutils "^2.0.2"
+    babel-code-frame "^6.16.0"
+    babel-messages "^6.8.0"
+    babel-runtime "^6.9.0"
+    babel-types "^6.19.0"
+    babylon "^6.11.0"
+    debug "^2.2.0"
+    globals "^9.0.0"
+    invariant "^2.2.0"
     lodash "^4.2.0"
-    to-fast-properties "^1.0.1"
 
-babel-types@^6.23.0, babel-types@^6.24.1:
+babel-types@^6.13.0, babel-types@^6.16.0, babel-types@^6.19.0, babel-types@^6.23.0, babel-types@^6.24.1, babel-types@^6.8.0, babel-types@^6.9.0:
   version "6.24.1"
   resolved "https://registry.yarnpkg.com/babel-types/-/babel-types-6.24.1.tgz#a136879dc15b3606bda0d90c1fc74304c2ff0975"
   dependencies:
     babel-runtime "^6.22.0"
+    esutils "^2.0.2"
+    lodash "^4.2.0"
+    to-fast-properties "^1.0.1"
+
+babel-types@^6.18.0:
+  version "6.19.0"
+  resolved "https://registry.yarnpkg.com/babel-types/-/babel-types-6.19.0.tgz#8db2972dbed01f1192a8b602ba1e1e4c516240b9"
+  dependencies:
+    babel-runtime "^6.9.1"
     esutils "^2.0.2"
     lodash "^4.2.0"
     to-fast-properties "^1.0.1"
@@ -5257,16 +5227,7 @@ postcss-zindex@^2.0.1:
     postcss "^5.0.4"
     uniqs "^2.0.0"
 
-postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0.14, postcss@^5.0.16, postcss@^5.0.2, postcss@^5.0.21, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.0.6, postcss@^5.0.8:
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-5.2.6.tgz#a252cd67cd52585035f17e9ad12b35137a7bdd9e"
-  dependencies:
-    chalk "^1.1.3"
-    js-base64 "^2.1.9"
-    source-map "^0.5.6"
-    supports-color "^3.1.2"
-
-postcss@^5.2.15, postcss@^5.2.16:
+postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0.14, postcss@^5.0.16, postcss@^5.0.2, postcss@^5.0.21, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.0.6, postcss@^5.0.8, postcss@^5.2.15, postcss@^5.2.16:
   version "5.2.17"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-5.2.17.tgz#cf4f597b864d65c8a492b2eabe9d706c879c388b"
   dependencies:
@@ -6276,11 +6237,7 @@ sort-keys@^1.0.0:
   dependencies:
     is-plain-obj "^1.0.0"
 
-source-list-map@^0.1.4, source-list-map@~0.1.0:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-0.1.6.tgz#e1e6f94f0b40c4d28dcf8f5b8766e0e45636877f"
-
-source-list-map@^0.1.7:
+source-list-map@^0.1.4, source-list-map@^0.1.7, source-list-map@~0.1.0:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-0.1.8.tgz#c550b2ab5427f6b3f21f5afead88c4f5587b2106"
 
@@ -6512,7 +6469,7 @@ superagent@^2.2.0, superagent@^2.3.0:
     qs "^6.1.0"
     readable-stream "^2.0.5"
 
-supports-color@3.1.2, supports-color@^3.1.0, supports-color@^3.1.1, supports-color@^3.1.2:
+supports-color@3.1.2, supports-color@^3.1.0, supports-color@^3.1.1:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-3.1.2.tgz#72a262894d9d408b956ca05ff37b2ed8a6e2a2d5"
   dependencies:
@@ -6522,7 +6479,7 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
-supports-color@^3.2.3:
+supports-color@^3.1.2, supports-color@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-3.2.3.tgz#65ac0504b3954171d8a64946b2ae3cbb8a5f54f6"
   dependencies:
@@ -6832,6 +6789,10 @@ upper-case@^1.0.3, upper-case@^1.1.0, upper-case@^1.1.1:
 url-join@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-0.0.1.tgz#1db48ad422d3402469a87f7d97bdebfe4fb1e3c8"
+
+url-join@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/url-join/-/url-join-1.1.0.tgz#741c6c2f4596c4830d6718460920d0c92202dc78"
 
 url-loader@^0.5.7:
   version "0.5.7"
