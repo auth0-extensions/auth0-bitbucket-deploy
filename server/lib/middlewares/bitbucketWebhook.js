@@ -38,7 +38,7 @@ const parse = (headers, { push = {}, repository = {}, actor = {} }) => {
   return data;
 };
 
-module.exports = () => (req, res, next) => {
+export default () => (req, res, next) => {
   if (!req.headers['x-hook-uuid']) {
     return next(new ArgumentError('The Bitbucket delivery identifier is missing.'));
   }

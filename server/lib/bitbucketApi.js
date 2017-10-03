@@ -2,25 +2,27 @@ import _ from 'lodash';
 import request from 'request';
 import extend from 'deep-extend';
 
-function Bitbucket(options) {
-  if (!(this instanceof Bitbucket)) {
-    return new Bitbucket(options);
-  }
-
-  this.options = extend({
-    user_name: null,
-    password: null,
-    rest_base: '',
-    rest_version: '',
-    rest_path: '',
-    request_options: {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+export default class Bitbucket {
+  constructor(options) {
+    if (!(this instanceof Bitbucket)) {
+      return new Bitbucket(options);
     }
-  }, options);
 
-  this.request = request;
+    this.options = extend({
+      user_name: null,
+      password: null,
+      rest_base: '',
+      rest_version: '',
+      rest_path: '',
+      request_options: {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    }, options);
+
+    this.request = request;
+  }
 }
 
 Bitbucket.prototype.buildEndpoint = function buildEndpoint(path, params) {
@@ -112,5 +114,3 @@ Bitbucket.prototype.put = function put(url, params, callback) {
 Bitbucket.prototype.delete = function del(url, params, callback) {
   return this.doRequest('delete', url, params, callback);
 };
-
-module.exports = Bitbucket;

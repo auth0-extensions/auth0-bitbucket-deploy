@@ -3,7 +3,7 @@ import { middlewares } from 'auth0-extension-express-tools';
 
 import config from '../lib/config';
 import deploy from '../lib/deploy';
-import { bitbucketWebhook } from '../lib/middlewares';
+import bitbucketWebhook from '../lib/middlewares/bitbucketWebhook';
 
 export default (storage) => {
   const activeBranch = config('BITBUCKET_BRANCH');
