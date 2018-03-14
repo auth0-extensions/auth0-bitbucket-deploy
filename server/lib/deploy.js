@@ -7,9 +7,13 @@ export default (storage, id, branch, repository, sha, user, client) => {
   const context = {
     init: (progress) => getChanges(repository, branch, sha, progress)
       .then(data => {
+        console.log(data);
         context.pages = data.pages;
         context.rules = data.rules;
         context.databases = data.databases;
+        context.clients = data.clients;
+        context.ruleConfigs = data.ruleConfigs;
+        context.resourceServers = data.resourceServers;
       })
   };
 
