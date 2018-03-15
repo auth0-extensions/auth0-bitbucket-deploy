@@ -363,14 +363,14 @@ const downloadConfigurable = (parsedRepo, branch, name, item, shaToken) => {
   };
 
   if (item.configFile) {
-    downloads.push(downloadFile(parsedRepo, branch, item.file, shaToken)
+    downloads.push(downloadFile(parsedRepo, branch, item.configFile, shaToken)
       .then(file => {
         currentItem.configFile = file.contents;
       }));
   }
 
   if (item.metadataFile) {
-    downloads.push(downloadFile(parsedRepo, branch, item.file, shaToken)
+    downloads.push(downloadFile(parsedRepo, branch, item.metadataFile, shaToken)
       .then(file => {
         currentItem.metadata = true;
         currentItem.metadataFile = file.contents;
