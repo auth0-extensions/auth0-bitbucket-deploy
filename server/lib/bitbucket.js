@@ -35,6 +35,12 @@ const isPage = (file) =>
 file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
 
 /*
+ * Check if a file is part of configurable folder.
+ */
+const isConfigurable = (file, directory) =>
+  file.indexOf(`${directory}/`) === 0;
+
+/*
  * Get the details of a database file script.
  */
 const getDatabaseScriptDetails = (filename) => {
@@ -55,11 +61,16 @@ const getDatabaseScriptDetails = (filename) => {
  * Only Javascript and JSON files.
  */
 const validFilesOnly = (fileName) => {
-  if (isRule(fileName)) {
-    return /\.(js|json)$/i.test(fileName);
+  if (isPage(fileName)) {
+    return true;
   } else if (isDatabaseConnection(fileName)) {
     const script = getDatabaseScriptDetails(fileName);
     return !!script;
+  } else if (isRule(fileName)
+    || isConfigurable(fileName, constants.CLIENTS_DIRECTORY)
+    || isConfigurable(fileName, constants.RESOURCE_SERVERS_DIRECTORY)
+    || isConfigurable(fileName, constants.RULES_CONFIGS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
   }
   return false;
 };
@@ -221,6 +232,36 @@ const getConnectionsTree = (params) =>
     }
   });
 
+
+/*
+ * Get rules tree.
+ */
+const getConfigurablesTree = (params, directory) =>
+  new Promise((resolve, reject) => {
+    try {
+      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${directory}`, params, (err, res) => {
+        if (err && err.statusCode === 404) {
+          return resolve([]);
+        } else if (err) {
+          return reject(err);
+        } else if (!res) {
+          return resolve([]);
+        }
+
+        const files = res.files
+          .filter(f => validFilesOnly(f.path));
+
+        files.forEach((elem, idx) => {
+          files[idx].path = elem.path;
+        });
+
+        return resolve(files);
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+
 /*
  * Get tree.
  */
@@ -235,10 +276,13 @@ const getTree = (parsedRepo, branch, sha, progress) => {
   const promises = {
     connections: getConnectionsTree(params),
     rules: getRulesTree(params),
-    pages: getPagesTree(params)
+    pages: getPagesTree(params),
+    clients: getConfigurablesTree(params, constants.CLIENTS_DIRECTORY),
+    ruleConfigs: getConfigurablesTree(params, constants.RULES_CONFIGS_DIRECTORY),
+    resourceServers: getConfigurablesTree(params, constants.RESOURCE_SERVERS_DIRECTORY)
   };
   return Promise.props(promises)
-    .then((result) => (_.union(result.rules, result.connections, result.pages)))
+    .then((result) => (_.union(result.rules, result.connections, result.pages, result.clients, result.ruleConfigs, result.resourceServers)))
     .catch(err => {
       if (progress && progress.log && err && err.report) {
         progress.log(err.report);
@@ -309,6 +353,34 @@ const downloadRule = (parsedRepo, branch, ruleName, rule, shaToken) => {
 };
 
 /*
+ * Download a single configurable file.
+ */
+const downloadConfigurable = (parsedRepo, branch, name, item, shaToken) => {
+  const downloads = [];
+  const currentItem = {
+    metadata: false,
+    name
+  };
+
+  if (item.configFile) {
+    downloads.push(downloadFile(parsedRepo, branch, item.configFile, shaToken)
+      .then(file => {
+        currentItem.configFile = file.contents;
+      }));
+  }
+
+  if (item.metadataFile) {
+    downloads.push(downloadFile(parsedRepo, branch, item.metadataFile, shaToken)
+      .then(file => {
+        currentItem.metadata = true;
+        currentItem.metadataFile = file.contents;
+      }));
+  }
+
+  return Promise.all(downloads).then(() => currentItem);
+};
+
+/*
  * Determine if we have the script, the metadata or both.
  */
 const getRules = (parsedRepo, branch, files, shaToken) => {
@@ -332,6 +404,38 @@ const getRules = (parsedRepo, branch, files, shaToken) => {
   // Download all rules.
   return Promise.map(Object.keys(rules), (ruleName) =>
     downloadRule(parsedRepo, branch, ruleName, rules[ruleName], shaToken), { concurrency: 2 });
+};
+
+/*
+ * Determine if we have the script, the metadata or both.
+ */
+const getConfigurables = (parsedRepo, branch, files, shaToken, directory) => {
+  const configurables = {};
+  _.filter(files, f => isConfigurable(f.path, directory)).forEach(file => {
+    let meta = false;
+    let name = path.parse(file.path).name;
+    const ext = path.parse(file.path).ext;
+
+    if (ext === '.json') {
+      if (name.endsWith('.meta')) {
+        name = path.parse(name).name;
+        meta = true;
+      }
+
+      /* Initialize object if needed */
+      configurables[name] = configurables[name] || {};
+
+      if (meta) {
+        configurables[name].metadataFile = file;
+      } else {
+        configurables[name].configFile = file;
+      }
+    }
+  });
+
+  // Download all rules.
+  return Promise.map(Object.keys(configurables), (key) =>
+    downloadConfigurable(parsedRepo, branch, key, configurables[key], shaToken), { concurrency: 2 });
 };
 
 /*
@@ -452,13 +556,19 @@ export default (repository, branch, sha, progress) =>
         const promises = {
           rules: getRules(parsedRepo, branch, files, sha),
           pages: getPages(parsedRepo, branch, files, sha),
-          databases: getDatabaseScripts(parsedRepo, branch, files, sha)
+          databases: getDatabaseScripts(parsedRepo, branch, files, sha),
+          clients: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_DIRECTORY),
+          ruleConfigs: getConfigurables(parsedRepo, branch, files, sha, constants.RULES_CONFIGS_DIRECTORY),
+          resourceServers: getConfigurables(parsedRepo, branch, files, sha, constants.RESOURCE_SERVERS_DIRECTORY)
         };
 
         return Promise.props(promises)
           .then((result) => Promise.resolve({
             rules: unifyScripts(result.rules),
             databases: unifyDatabases(result.databases),
-            pages: unifyScripts(result.pages)
+            pages: unifyScripts(result.pages),
+            clients: unifyScripts(result.clients),
+            ruleConfigs: unifyScripts(result.ruleConfigs),
+            resourceServers: unifyScripts(result.resourceServers)
           }));
       }));
