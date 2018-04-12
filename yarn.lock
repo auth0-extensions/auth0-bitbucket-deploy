@@ -331,11 +331,11 @@ auth0-oauth2-express@^1.1.8:
     jsonwebtoken "^5.0.1"
     superagent "^1.2.0"
 
-auth0-source-control-extension-tools@2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/auth0-source-control-extension-tools/-/auth0-source-control-extension-tools-2.5.1.tgz#7822790ae0d243a123a078d8d20473978baff992"
+auth0-source-control-extension-tools@^2.7.1:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/auth0-source-control-extension-tools/-/auth0-source-control-extension-tools-2.7.1.tgz#3d2a5cef1ad1963fa0bb3f38af23317d24e3abbe"
   dependencies:
-    auth0 "^2.7.0"
+    auth0 "^2.9.0"
     auth0-extension-tools "^0.14.0"
     auth0-oauth2-express "^1.1.8"
     bluebird "^3.4.6"
@@ -353,7 +353,7 @@ auth0@^2.3.1:
     rest-facade "^1.2.7"
     url-join "0.0.1"
 
-auth0@^2.7.0, auth0@^2.8.0:
+auth0@^2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.8.0.tgz#cd3c4aa78a433c1c9ca2f4c29cfc8f9baf09af13"
   dependencies:
@@ -362,6 +362,17 @@ auth0@^2.7.0, auth0@^2.8.0:
     object.assign "^4.0.4"
     request "^2.83.0"
     rest-facade "^1.5.0"
+
+auth0@^2.9.0:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.9.1.tgz#85e088035f29925ed086da94d811288a65f5835c"
+  dependencies:
+    bluebird "^2.10.2"
+    lru-memoizer "^1.11.1"
+    object.assign "^4.0.4"
+    request "^2.83.0"
+    rest-facade "^1.10.0"
+    retry "^0.10.1"
 
 autoprefixer@6.7.7, autoprefixer@^6.3.1:
   version "6.7.7"
@@ -6386,15 +6397,7 @@ resolve@^1.1.6, resolve@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
 
-rest-facade@^1.2.7:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/rest-facade/-/rest-facade-1.4.1.tgz#c9b87a4ddf04d95fc5a8acf0f1341561cacee4a2"
-  dependencies:
-    bluebird "^2.10.2"
-    change-case "^2.3.0"
-    superagent "^1.4.0"
-
-rest-facade@^1.5.0:
+rest-facade@^1.10.0, rest-facade@^1.5.0:
   version "1.10.1"
   resolved "https://registry.yarnpkg.com/rest-facade/-/rest-facade-1.10.1.tgz#a9b030ff50df28c9ea1a2719f94e369c47167d20"
   dependencies:
@@ -6404,6 +6407,14 @@ rest-facade@^1.5.0:
     superagent "^3.8.0"
     superagent-proxy "^1.0.2"
 
+rest-facade@^1.2.7:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/rest-facade/-/rest-facade-1.4.1.tgz#c9b87a4ddf04d95fc5a8acf0f1341561cacee4a2"
+  dependencies:
+    bluebird "^2.10.2"
+    change-case "^2.3.0"
+    superagent "^1.4.0"
+
 restore-cursor@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/restore-cursor/-/restore-cursor-1.0.1.tgz#34661f46886327fed2991479152252df92daa541"
@@ -6411,7 +6422,7 @@ restore-cursor@^1.0.1:
     exit-hook "^1.0.0"
     onetime "^1.0.0"
 
-retry@^0.10.0:
+retry@^0.10.0, retry@^0.10.1:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/retry/-/retry-0.10.1.tgz#e76388d217992c252750241d3d3956fed98d8ff4"
 
@@ -7178,6 +7189,15 @@ typedarray@~0.0.5:
 ua-parser-js@^0.7.9:
   version "0.7.12"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.12.tgz#04c81a99bdd5dc52263ea29d24c6bf8d4818a4bb"
+
+uglify-js@^2.4.19:
+  version "2.8.29"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.29.tgz#29c5733148057bb4e1f75df35b7a9cb72e6a59dd"
+  dependencies:
+    source-map "~0.5.1"
+    yargs "~3.10.0"
+  optionalDependencies:
+    uglify-to-browserify "~1.0.0"
 
 uglify-js@^2.6, uglify-js@^2.6.1, uglify-js@~2.7.3:
   version "2.7.4"
