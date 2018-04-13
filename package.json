@@ -30,37 +30,7 @@
   "author": "Sandrino Di Mattia",
   "license": "MIT",
   "auth0-extension": {
-    "externals": [
-      "async",
-      "auth0",
-      "auth0-extension-express-tools",
-      "auth0-extension-tools",
-      "auth0-extension-ui",
-      "auth0-oauth2-express",
-      "auth0-source-control-extension-tools",
-      "bluebird",
-      "body-parser",
-      "babel-runtime",
-      "cookie-signature",
-      "deep-extend",
-      "express",
-      "express-jwt",
-      "ejs",
-      "jsonwebtoken",
-      "jwks-rsa",
-      "jwt-decode",
-      "lodash",
-      "lru-memoizer",
-      "moment",
-      "morgan",
-      "nconf",
-      "qs",
-      "request",
-      "request-promise",
-      "url-join",
-      "webtask-tools",
-      "winston"
-    ]
+    "bundleModules": false
   },
   "dependencies": {
     "auth0": "^2.8.0",
