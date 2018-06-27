@@ -121,17 +121,16 @@ const checkRepo = (repository) =>
 const getPagesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.PAGES_DIRECTORY}?pagelen=100`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.PAGES_DIRECTORY}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);
-        } else if (!res || !res.values) {
+        } else if (!res) {
           return resolve([]);
         }
 
-        const files = res.values
-          .filter(f => validPageFilesOnly(f.path));
+        const files = res.filter(f => validPageFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
           files[idx].path = elem.path;
@@ -150,17 +149,16 @@ const getPagesTree = (params) =>
 const getRulesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.RULES_DIRECTORY}?pagelen=100`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.RULES_DIRECTORY}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);
-        } else if (!res || !res.values) {
+        } else if (!res) {
           return resolve([]);
         }
 
-        const files = res.values
-          .filter(f => validFilesOnly(f.path));
+        const files = res.filter(f => validFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
           files[idx].path = elem.path;
@@ -179,17 +177,14 @@ const getRulesTree = (params) =>
 const getConnectionTreeByPath = (params, filePath) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${filePath}?pagelen=100`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${filePath}`, params, (err, res) => {
         if (err) {
           return reject(err);
         } else if (!res) {
           return resolve([]);
-        } else if (!res || !res.values) {
-          return resolve([]);
         }
 
-        const files = res.values
-          .filter(f => validFilesOnly(f.path));
+        const files = res.filter(f => validFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
           files[idx].path = elem.path;
@@ -208,16 +203,16 @@ const getConnectionTreeByPath = (params, filePath) =>
 const getConnectionsTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.DATABASE_CONNECTIONS_DIRECTORY}?pagelen=100`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.DATABASE_CONNECTIONS_DIRECTORY}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);
-        } else if (!res || !res.values) {
+        } else if (!res) {
           return resolve([]);
         }
 
-        const subdirs = res.values.filter(item => item.type === 'commit_directory');
+        const subdirs = res.filter(item => item.type === 'commit_directory');
         const promisses = [];
         let files = [];
 
@@ -242,17 +237,16 @@ const getConnectionsTree = (params) =>
 const getConfigurablesTree = (params, directory) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${directory}?pagelen=100`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${directory}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
           return reject(err);
-        } else if (!res || !res.values) {
+        } else if (!res) {
           return resolve([]);
         }
 
-        const files = res.values
-          .filter(f => validFilesOnly(f.path));
+        const files = res.filter(f => validFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
           files[idx].path = elem.path;
