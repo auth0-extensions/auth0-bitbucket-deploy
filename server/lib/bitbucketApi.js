@@ -32,7 +32,7 @@ export default class Bitbucket {
             if (typeof data.errors !== 'undefined') {
               cb(data.errors);
             } else if (response.statusCode !== 200) {
-              cb(this.generateApiError(response.statusCode, response));
+              cb(this.generateApiError(opts.url, response.statusCode, response));
             } else {
               cb(null, data);
             }
@@ -40,21 +40,21 @@ export default class Bitbucket {
             if (response.statusCode === 200) {
               cb(null, data);
             } else {
-              cb(this.generateApiError(response.statusCode, response));
+              cb(this.generateApiError(opts.url, response.statusCode, response));
             }
           }
         }
       }).auth(this.options.user_name, this.options.password, true);
     };
 
-    this.generateApiError = (statusCode, response = null) => {
-      const error = new Error(`Error ${statusCode} when calling '${options.method.toUpperCase()} ${options.url}' (username: ${this.options.user_name})`);
+    this.generateApiError = (url, statusCode, response = null) => {
+      const error = new Error(`Error ${statusCode} when calling GET '${url}' (username: ${this.options.user_name})`);
       error.status = statusCode;
       error.statusCode = statusCode;
       error.report = `status: ${statusCode}
       user: ${this.options.user_name}
-      url: ${options.url}
-      method: ${options.method}
+      url: ${url}
+      method: get
       response: ${JSON.stringify(response)}`;
       return error;
     };
