@@ -14,7 +14,7 @@ const bitbucket = () =>
     user_name: config('BITBUCKET_USER'),
     password: config('BITBUCKET_PASSWORD'),
     rest_base: 'https://api.bitbucket.org/',
-    rest_version: '1.0'
+    rest_version: '2.0'
   });
 /*
  * Check if a file is part of the rules folder.
@@ -121,7 +121,7 @@ const checkRepo = (repository) =>
 const getPagesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.PAGES_DIRECTORY}`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.PAGES_DIRECTORY}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
@@ -130,8 +130,7 @@ const getPagesTree = (params) =>
           return resolve([]);
         }
 
-        const files = res.files
-          .filter(f => validPageFilesOnly(f.path));
+        const files = res.filter(f => validPageFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
           files[idx].path = elem.path;
@@ -150,7 +149,7 @@ const getPagesTree = (params) =>
 const getRulesTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.RULES_DIRECTORY}`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.RULES_DIRECTORY}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
@@ -159,8 +158,7 @@ const getRulesTree = (params) =>
           return resolve([]);
         }
 
-        const files = res.files
-          .filter(f => validFilesOnly(f.path));
+        const files = res.filter(f => validFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
           files[idx].path = elem.path;
@@ -179,14 +177,14 @@ const getRulesTree = (params) =>
 const getConnectionTreeByPath = (params, filePath) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${filePath}`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${filePath}`, params, (err, res) => {
         if (err) {
           return reject(err);
         } else if (!res) {
           return resolve([]);
         }
-        const files = res.files
-          .filter(f => validFilesOnly(f.path));
+
+        const files = res.filter(f => validFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
           files[idx].path = elem.path;
@@ -205,7 +203,7 @@ const getConnectionTreeByPath = (params, filePath) =>
 const getConnectionsTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${constants.DATABASE_CONNECTIONS_DIRECTORY}`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.DATABASE_CONNECTIONS_DIRECTORY}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
@@ -214,12 +212,12 @@ const getConnectionsTree = (params) =>
           return resolve([]);
         }
 
-        const subdirs = res.directories;
+        const subdirs = res.filter(item => item.type === 'commit_directory');
         const promisses = [];
         let files = [];
 
         _.forEach(subdirs, (dir) => {
-          promisses.push(getConnectionTreeByPath(params, `${constants.DATABASE_CONNECTIONS_DIRECTORY}/${dir}`).then(data => {
+          promisses.push(getConnectionTreeByPath(params, dir.path).then(data => {
             files = files.concat(data);
           }));
         });
@@ -239,7 +237,7 @@ const getConnectionsTree = (params) =>
 const getConfigurablesTree = (params, directory) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().get(`repositories/{username}/{repo_slug}/src/{revision}/${directory}`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${directory}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
@@ -248,8 +246,7 @@ const getConfigurablesTree = (params, directory) =>
           return resolve([]);
         }
 
-        const files = res.files
-          .filter(f => validFilesOnly(f.path));
+        const files = res.filter(f => validFilesOnly(f.path));
 
         files.forEach((elem, idx) => {
           files[idx].path = elem.path;
@@ -304,7 +301,8 @@ const downloadFile = (parsedRepo, branch, file, shaToken) =>
       filename: file.path,
       revision: shaToken
     };
-    const url = 'repositories/{username}/{repo_slug}/raw/{revision}/{filename}';
+
+    const url = 'repositories/{username}/{repo_slug}/src/{revision}/{filename}';
     bitbucket().get(url, params, (err, data) => {
       if (err !== null) {
         logger.error(`Error downloading '${file.path}'`);
