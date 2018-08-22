@@ -1,12 +1,12 @@
 import _ from 'lodash';
 import path from 'path';
 import Promise from 'bluebird';
-import { constants, unifyDatabases, unifyScripts } from 'auth0-source-control-extension-tools';
+import { constants } from 'auth0-source-control-extension-tools';
 import { ArgumentError } from 'auth0-extension-tools';
 
 import BitbucketApi from './bitbucketApi';
 import config from './config';
-import logger from '../lib/logger';
+import logger from './logger';
 
 
 const bitbucket = () =>
@@ -114,6 +114,47 @@ const checkRepo = (repository) =>
       reject(e);
     }
   });
+
+const unifyItem = (item, type) => {
+  switch (type) {
+    default:
+    case 'rules': {
+      const meta = item.metadataFile || {};
+      const { order = 0, enabled, stage = 'login_success' } = meta;
+      return ({ script: item.scriptFile, name: item.name, order, stage, enabled });
+    }
+    case 'pages': {
+      const meta = item.metadataFile || {};
+      const { enabled } = meta;
+      return ({ html: item.htmlFile, name: item.name, enabled });
+    }
+    case 'databases': {
+      const customScripts = {};
+      _.forEach(item.scripts, (script) => { customScripts[script.name] = script.scriptFile; });
+      return ({ strategy: 'auth0', name: item.name, options: { customScripts, enabledDatabaseCustomization: true } });
+    }
+    case 'resourceServers':
+    case 'clients': {
+      const meta = item.metadataFile || {};
+      const data = item.configFile || {};
+      return ({ name: item.name, ...meta, ...data });
+    }
+    case 'rulesConfigs': {
+      const data = item.configFile || {};
+      return ({ key: item.name, value: data.value });
+    }
+  }
+};
+
+const unifyData = (assets) => {
+  const result = {};
+  _.forEach(assets, (data, type) => {
+    result[type] = [];
+    _.forEach(data, (item) => result[type].push(unifyItem(item, type)));
+  });
+
+  return result;
+};
 
 /*
  * Get pages tree.
@@ -262,7 +303,7 @@ const getConfigurablesTree = (params, directory) =>
 /*
  * Get tree.
  */
-const getTree = (parsedRepo, branch, sha, progress) => {
+const getTree = (parsedRepo, branch, sha) => {
   const { user, repo } = parsedRepo;
 
   const params = {
@@ -275,18 +316,11 @@ const getTree = (parsedRepo, branch, sha, progress) => {
     rules: getRulesTree(params),
     pages: getPagesTree(params),
     clients: getConfigurablesTree(params, constants.CLIENTS_DIRECTORY),
-    ruleConfigs: getConfigurablesTree(params, constants.RULES_CONFIGS_DIRECTORY),
+    rulesConfigs: getConfigurablesTree(params, constants.RULES_CONFIGS_DIRECTORY),
     resourceServers: getConfigurablesTree(params, constants.RESOURCE_SERVERS_DIRECTORY)
   };
   return Promise.props(promises)
-    .then((result) => (_.union(result.rules, result.connections, result.pages, result.clients, result.ruleConfigs, result.resourceServers)))
-    .catch(err => {
-      if (progress && progress.log && err && err.report) {
-        progress.log(err.report);
-      }
-
-      return Promise.reject(err);
-    });
+    .then((result) => (_.union(result.rules, result.connections, result.pages, result.clients, result.rulesConfigs, result.resourceServers)));
 };
 
 /*
@@ -542,9 +576,9 @@ const getPages = (parsedRepo, branch, files, shaToken) => {
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export default (repository, branch, sha, progress) =>
+export default (repository, branch, sha) =>
   checkRepo(repository)
-    .then((parsedRepo) => getTree(parsedRepo, branch, sha, progress)
+    .then((parsedRepo) => getTree(parsedRepo, branch, sha)
       .then(files => {
         logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
           path: file.path,
@@ -556,17 +590,10 @@ export default (repository, branch, sha, progress) =>
           pages: getPages(parsedRepo, branch, files, sha),
           databases: getDatabaseScripts(parsedRepo, branch, files, sha),
           clients: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_DIRECTORY),
-          ruleConfigs: getConfigurables(parsedRepo, branch, files, sha, constants.RULES_CONFIGS_DIRECTORY),
+          rulesConfigs: getConfigurables(parsedRepo, branch, files, sha, constants.RULES_CONFIGS_DIRECTORY),
           resourceServers: getConfigurables(parsedRepo, branch, files, sha, constants.RESOURCE_SERVERS_DIRECTORY)
         };
 
         return Promise.props(promises)
-          .then((result) => Promise.resolve({
-            rules: unifyScripts(result.rules),
-            databases: unifyDatabases(result.databases),
-            pages: unifyScripts(result.pages),
-            clients: unifyScripts(result.clients),
-            ruleConfigs: unifyScripts(result.ruleConfigs),
-            resourceServers: unifyScripts(result.resourceServers)
-          }));
+          .then((result) => Promise.resolve(unifyData(result)));
       }));
