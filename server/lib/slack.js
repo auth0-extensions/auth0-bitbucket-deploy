@@ -13,8 +13,8 @@ const createPayload = (progress, extensionUrl) => {
   };
 
   const template = {
-    fallback: 'Github to Auth0 Deployment',
-    text: 'Github to Auth0 Deployment',
+    fallback: 'Bitbucket to Auth0 Deployment',
+    text: 'Bitbucket to Auth0 Deployment',
     fields: [
       { title: 'Repository', value: progress.repository, short: true },
       { title: 'Branch', value: progress.branch, short: true },
