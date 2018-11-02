@@ -16,29 +16,44 @@ const bitbucket = () =>
     rest_base: 'https://api.bitbucket.org/',
     rest_version: '2.0'
   });
+
+const getBaseDir = () => {
+  let baseDir = config('BASE_DIR') || '';
+  if (baseDir.startsWith('/')) baseDir = baseDir.slice(1);
+  if (baseDir !== '' && !baseDir.endsWith('/')) baseDir += '/';
+
+  return baseDir;
+};
+
 /*
  * Check if a file is part of the rules folder.
  */
 const isRule = (fileName) =>
-fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
+  fileName.indexOf(`${getBaseDir()}${constants.RULES_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the database folder.
  */
 const isDatabaseConnection = (fileName) =>
-fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+  fileName.indexOf(`${getBaseDir()}${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
 
 /*
- * Check if a file is part of the pages folder.
+ * Check if a file is part of the templates folder - emails or pages.
  */
-const isPage = (file) =>
-file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
+const isTemplates = (fileName, dir, allowedNames) =>
+  fileName.indexOf(`${getBaseDir()}${dir}/`) === 0 && allowedNames.indexOf(fileName.split('/').pop()) >= 0;
+
+/*
+ * Check if a file is email provider.
+ */
+const isEmailProvider = (fileName) =>
+  fileName === `${getBaseDir()}${constants.EMAIL_TEMPLATES_DIRECTORY}/provider.json`;
 
 /*
  * Check if a file is part of configurable folder.
  */
 const isConfigurable = (file, directory) =>
-  file.indexOf(`${directory}/`) === 0;
+  file.indexOf(`${getBaseDir()}${directory}/`) === 0;
 
 /*
  * Get the details of a database file script.
@@ -61,26 +76,30 @@ const getDatabaseScriptDetails = (filename) => {
  * Only Javascript and JSON files.
  */
 const validFilesOnly = (fileName) => {
-  if (isPage(fileName)) {
+  if (isTemplates(fileName, constants.PAGES_DIRECTORY, constants.PAGE_NAMES)) {
     return true;
+  } else if (isTemplates(fileName, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES)) {
+    return true;
+  } else if (isEmailProvider(fileName)) {
+    return true;
+  } else if (isRule(fileName)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.CLIENTS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.CLIENTS_GRANTS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.CONNECTIONS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.RESOURCE_SERVERS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.RULES_CONFIGS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
   } else if (isDatabaseConnection(fileName)) {
     const script = getDatabaseScriptDetails(fileName);
     return !!script;
-  } else if (isRule(fileName)
-    || isConfigurable(fileName, constants.CLIENTS_DIRECTORY)
-    || isConfigurable(fileName, constants.RESOURCE_SERVERS_DIRECTORY)
-    || isConfigurable(fileName, constants.RULES_CONFIGS_DIRECTORY)) {
-    return /\.(js|json)$/i.test(fileName);
   }
   return false;
 };
-
-/**
- * only current pages could be uploaded
- * @param fileName
- * @returns {boolean}
- */
-const validPageFilesOnly = (fileName) => isPage(fileName);
 
 /*
  * Parse the repository.
@@ -128,12 +147,23 @@ const unifyItem = (item, type) => {
       const { enabled } = meta;
       return ({ html: item.htmlFile, name: item.name, enabled });
     }
+    case 'emailTemplates': {
+      if (item.name === 'provider') return null;
+      const meta = item.metadataFile || {};
+      return ({ ...meta, body: item.htmlFile });
+    }
+    case 'clientGrants':
+    case 'emailProvider': {
+      const data = item.configFile || {};
+      return ({ ...data });
+    }
     case 'databases': {
       const customScripts = {};
       _.forEach(item.scripts, (script) => { customScripts[script.name] = script.scriptFile; });
       return ({ strategy: 'auth0', name: item.name, options: { customScripts, enabledDatabaseCustomization: true } });
     }
     case 'resourceServers':
+    case 'connections':
     case 'clients': {
       const meta = item.metadataFile || {};
       const data = item.configFile || {};
@@ -150,7 +180,14 @@ const unifyData = (assets) => {
   const result = {};
   _.forEach(assets, (data, type) => {
     result[type] = [];
-    _.forEach(data, (item) => result[type].push(unifyItem(item, type)));
+    if (Array.isArray(data)) {
+      _.forEach(data, (item) => {
+        const unified = unifyItem(item, type);
+        if (unified) result[type].push(unified);
+      });
+    } else {
+      result[type] = unifyItem(data, type);
+    }
   });
 
   return result;
@@ -159,38 +196,10 @@ const unifyData = (assets) => {
 /*
  * Get pages tree.
  */
-const getPagesTree = (params) =>
+const getTreeByDir = (params, dir) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.PAGES_DIRECTORY}`, params, (err, res) => {
-        if (err && err.statusCode === 404) {
-          return resolve([]);
-        } else if (err) {
-          return reject(err);
-        } else if (!res) {
-          return resolve([]);
-        }
-
-        const files = res.filter(f => validPageFilesOnly(f.path));
-
-        files.forEach((elem, idx) => {
-          files[idx].path = elem.path;
-        });
-
-        return resolve(files);
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
-
-/*
- * Get rules tree.
- */
-const getRulesTree = (params) =>
-  new Promise((resolve, reject) => {
-    try {
-      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.RULES_DIRECTORY}`, params, (err, res) => {
+      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${getBaseDir()}${dir}`, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
@@ -215,7 +224,7 @@ const getRulesTree = (params) =>
 /*
  * Get connection files for one db connection
  */
-const getConnectionTreeByPath = (params, filePath) =>
+const getDBConnectionTreeByPath = (params, filePath) =>
   new Promise((resolve, reject) => {
     try {
       bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${filePath}`, params, (err, res) => {
@@ -241,10 +250,11 @@ const getConnectionTreeByPath = (params, filePath) =>
 /*
  * Get all files for all database-connections.
  */
-const getConnectionsTree = (params) =>
+const getDBConnectionsTree = (params) =>
   new Promise((resolve, reject) => {
     try {
-      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${constants.DATABASE_CONNECTIONS_DIRECTORY}`, params, (err, res) => {
+      const path = `repositories/{username}/{repo_slug}/src/{revision}/${getBaseDir()}${constants.DATABASE_CONNECTIONS_DIRECTORY}`;
+      bitbucket().getTree(path, params, (err, res) => {
         if (err && err.statusCode === 404) {
           return resolve([]);
         } else if (err) {
@@ -258,42 +268,13 @@ const getConnectionsTree = (params) =>
         let files = [];
 
         _.forEach(subdirs, (dir) => {
-          promisses.push(getConnectionTreeByPath(params, dir.path).then(data => {
+          promisses.push(getDBConnectionTreeByPath(params, dir.path).then(data => {
             files = files.concat(data);
           }));
         });
 
         return Promise.all(promisses)
           .then(() => resolve(files));
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
-
-
-/*
- * Get rules tree.
- */
-const getConfigurablesTree = (params, directory) =>
-  new Promise((resolve, reject) => {
-    try {
-      bitbucket().getTree(`repositories/{username}/{repo_slug}/src/{revision}/${directory}`, params, (err, res) => {
-        if (err && err.statusCode === 404) {
-          return resolve([]);
-        } else if (err) {
-          return reject(err);
-        } else if (!res) {
-          return resolve([]);
-        }
-
-        const files = res.filter(f => validFilesOnly(f.path));
-
-        files.forEach((elem, idx) => {
-          files[idx].path = elem.path;
-        });
-
-        return resolve(files);
       });
     } catch (e) {
       reject(e);
@@ -312,15 +293,28 @@ const getTree = (parsedRepo, branch, sha) => {
     revision: sha
   };
   const promises = {
-    connections: getConnectionsTree(params),
-    rules: getRulesTree(params),
-    pages: getPagesTree(params),
-    clients: getConfigurablesTree(params, constants.CLIENTS_DIRECTORY),
-    rulesConfigs: getConfigurablesTree(params, constants.RULES_CONFIGS_DIRECTORY),
-    resourceServers: getConfigurablesTree(params, constants.RESOURCE_SERVERS_DIRECTORY)
+    databases: getDBConnectionsTree(params),
+    rules: getTreeByDir(params, constants.RULES_DIRECTORY),
+    pages: getTreeByDir(params, constants.PAGES_DIRECTORY),
+    emails: getTreeByDir(params, constants.EMAIL_TEMPLATES_DIRECTORY),
+    clientGrants: getTreeByDir(params, constants.CLIENTS_GRANTS_DIRECTORY),
+    connections: getTreeByDir(params, constants.CONNECTIONS_DIRECTORY),
+    clients: getTreeByDir(params, constants.CLIENTS_DIRECTORY),
+    rulesConfigs: getTreeByDir(params, constants.RULES_CONFIGS_DIRECTORY),
+    resourceServers: getTreeByDir(params, constants.RESOURCE_SERVERS_DIRECTORY)
   };
   return Promise.props(promises)
-    .then((result) => (_.union(result.rules, result.connections, result.pages, result.clients, result.rulesConfigs, result.resourceServers)));
+    .then((result) => (_.union(
+      result.rules,
+      result.databases,
+      result.emails,
+      result.pages,
+      result.clients,
+      result.clientGrants,
+      result.connections,
+      result.rulesConfigs,
+      result.resourceServers
+    )));
 };
 
 /*
@@ -439,6 +433,14 @@ const getRules = (parsedRepo, branch, files, shaToken) => {
 };
 
 /*
+ * Get email provider.
+ */
+const getEmailProvider = (parsedRepo, branch, files, shaToken) => {
+  const providerFile = { configFile: _.find(files, f => isEmailProvider(f.path)) };
+  return downloadConfigurable(parsedRepo, branch, 'emailProvider', providerFile, shaToken);
+};
+
+/*
  * Determine if we have the script, the metadata or both.
  */
 const getConfigurables = (parsedRepo, branch, files, shaToken, directory) => {
@@ -521,56 +523,56 @@ const getDatabaseScripts = (parsedRepo, branch, files, shaToken) => {
 /*
  * Download a single page script.
  */
-const downloadPage = (parsedRepo, branch, pageName, page, shaToken) => {
+const downloadTemplate = (parsedRepo, branch, tplName, template, shaToken) => {
   const downloads = [];
-  const currentPage = {
+  const currentTpl = {
     metadata: false,
-    name: pageName
+    name: tplName
   };
 
-  if (page.file) {
-    downloads.push(downloadFile(parsedRepo, branch, page.file, shaToken)
+  if (template.file) {
+    downloads.push(downloadFile(parsedRepo, branch, template.file, shaToken)
       .then(file => {
-        currentPage.htmlFile = file.contents;
+        currentTpl.htmlFile = file.contents;
       }));
   }
 
-  if (page.meta_file) {
-    downloads.push(downloadFile(parsedRepo, branch, page.meta_file, shaToken)
+  if (template.meta_file) {
+    downloads.push(downloadFile(parsedRepo, branch, template.meta_file, shaToken)
       .then(file => {
-        currentPage.metadata = true;
-        currentPage.metadataFile = file.contents;
+        currentTpl.metadata = true;
+        currentTpl.metadataFile = file.contents;
       }));
   }
 
   return Promise.all(downloads)
-    .then(() => currentPage);
+    .then(() => currentTpl);
 };
 
 /*
- * Get all pages.
+ * Get all html templates - emails/pages.
  */
-const getPages = (parsedRepo, branch, files, shaToken) => {
-  const pages = {};
+const getHtmlTemplates = (parsedRepo, branch, files, shaToken, dir, allowedNames) => {
+  const templates = {};
   // Determine if we have the script, the metadata or both.
-  _.filter(files, f => isPage(f.path)).forEach(file => {
-    const pageName = path.parse(file.path).name;
+  _.filter(files, f => isTemplates(f.path, dir, allowedNames)).forEach(file => {
+    const tplName = path.parse(file.path).name;
     const ext = path.parse(file.path).ext;
-    pages[pageName] = pages[pageName] || {};
+    templates[tplName] = templates[tplName] || {};
 
     if (ext !== '.json') {
-      pages[pageName].file = file;
-      pages[pageName].sha = file.sha;
-      pages[pageName].path = file.path;
+      templates[tplName].file = file;
+      templates[tplName].sha = file.sha;
+      templates[tplName].path = file.path;
     } else {
-      pages[pageName].meta_file = file;
-      pages[pageName].meta_sha = file.sha;
-      pages[pageName].meta_path = file.path;
+      templates[tplName].meta_file = file;
+      templates[tplName].meta_sha = file.sha;
+      templates[tplName].meta_path = file.path;
     }
   });
 
-  return Promise.map(Object.keys(pages), (pageName) =>
-    downloadPage(parsedRepo, branch, pageName, pages[pageName], shaToken), { concurrency: 2 });
+  return Promise.map(Object.keys(templates), (name) =>
+    downloadTemplate(parsedRepo, branch, name, templates[name], shaToken), { concurrency: 2 });
 };
 
 /*
@@ -587,9 +589,13 @@ export default (repository, branch, sha) =>
 
         const promises = {
           rules: getRules(parsedRepo, branch, files, sha),
-          pages: getPages(parsedRepo, branch, files, sha),
           databases: getDatabaseScripts(parsedRepo, branch, files, sha),
+          emailProvider: getEmailProvider(repository, branch, files),
+          emailTemplates: getHtmlTemplates(parsedRepo, branch, files, sha, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+          pages: getHtmlTemplates(parsedRepo, branch, files, sha, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
           clients: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_DIRECTORY),
+          clientGrants: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_GRANTS_DIRECTORY),
+          connections: getConfigurables(parsedRepo, branch, files, sha, constants.CONNECTIONS_DIRECTORY),
           rulesConfigs: getConfigurables(parsedRepo, branch, files, sha, constants.RULES_CONFIGS_DIRECTORY),
           resourceServers: getConfigurables(parsedRepo, branch, files, sha, constants.RESOURCE_SERVERS_DIRECTORY)
         };
