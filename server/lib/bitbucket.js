@@ -590,7 +590,7 @@ export default (repository, branch, sha) =>
         const promises = {
           rules: getRules(parsedRepo, branch, files, sha),
           databases: getDatabaseScripts(parsedRepo, branch, files, sha),
-          emailProvider: getEmailProvider(repository, branch, files),
+          emailProvider: getEmailProvider(parsedRepo, branch, files, sha),
           emailTemplates: getHtmlTemplates(parsedRepo, branch, files, sha, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
           pages: getHtmlTemplates(parsedRepo, branch, files, sha, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
           clients: getConfigurables(parsedRepo, branch, files, sha, constants.CLIENTS_DIRECTORY),
