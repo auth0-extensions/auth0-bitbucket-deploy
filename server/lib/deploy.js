@@ -1,26 +1,29 @@
 import { deploy as sourceDeploy } from 'auth0-source-control-extension-tools';
 
-import config from '../lib/config';
+import report from './reporter';
+import { getExcluded } from './storage';
+import config from './config';
 import getChanges from './bitbucket';
 
 export default (storage, id, branch, repository, sha, user, client) => {
-  const context = {
-    init: (progress) => getChanges(repository, branch, sha, progress)
-      .then(data => {
-        console.log(data);
-        context.pages = data.pages;
-        context.rules = data.rules;
-        context.databases = data.databases;
-        context.clients = data.clients;
-        context.ruleConfigs = data.ruleConfigs;
-        context.resourceServers = data.resourceServers;
-      })
+  const repo = {
+    id,
+    sha,
+    user,
+    branch,
+    repository
   };
 
-  const slackTemplate = {
-    fallback: 'Bitbucket to Auth0 Deployment',
-    text: 'Bitbucket to Auth0 Deployment'
-  };
-
-  return sourceDeploy({ id, branch, repository, sha, user }, context, client, storage, config, slackTemplate);
+  return getChanges(repository, branch, sha)
+    .then(assets =>
+      getExcluded(storage)
+        .then((exclude) => {
+          assets.exclude = exclude;
+          repo.assets = assets;
+          return assets;
+        }))
+    .then(assets => sourceDeploy(assets, client, config))
+    .then(progress => report(storage, { repo, progress }))
+    .catch(err => report(storage, { repo, error: err.message })
+      .then(() => Promise.reject(err)));
 };
