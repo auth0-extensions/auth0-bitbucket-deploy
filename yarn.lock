@@ -515,24 +515,19 @@ auth0-oauth2-express@^1.1.8:
     jsonwebtoken "^5.0.1"
     superagent "^1.2.0"
 
-auth0-source-control-extension-tools@3.0.9:
-  version "3.0.9"
-  resolved "https://registry.yarnpkg.com/auth0-source-control-extension-tools/-/auth0-source-control-extension-tools-3.0.9.tgz#1c6c5212a0464277447734569c7c7a4b40a2d648"
+auth0-source-control-extension-tools@3.0.10:
+  version "3.0.10"
+  resolved "https://registry.yarnpkg.com/auth0-source-control-extension-tools/-/auth0-source-control-extension-tools-3.0.10.tgz#b347b66d085abb8e922984e0151e128973d50f26"
   dependencies:
     ajv "^6.5.2"
-    auth0 "^2.14.0"
     auth0-extension-tools "^1.3.1"
-    auth0-oauth2-express "^1.1.8"
     babel-preset-env "^1.7.0"
     dot-prop "^4.2.0"
-    es6-promise-pool "^2.5.0"
-    es6-template-strings "^2.0.1"
     promise-pool-executor "^1.1.1"
     rimraf "^2.5.4"
-    superagent "^3.5.2"
     winston "^2.2.0"
 
-auth0@^2.11.0, auth0@^2.14.0, auth0@^2.9.1:
+auth0@^2.11.0, auth0@^2.9.1:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.14.0.tgz#c5eb68fe02ae1c943ff6e71c4f707df76831e7a2"
   dependencies:
@@ -3080,12 +3075,6 @@ cyclist@~0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-0.2.2.tgz#1b33792e11e914a2fd6d6ed6447464444e5fa640"
 
-d@1:
-  version "1.0.0"
-  resolved "http://registry.npmjs.org/d/-/d-1.0.0.tgz#754bb5bfe55451da69a58b94d45f4c5b0462d58f"
-  dependencies:
-    es5-ext "^0.10.9"
-
 d@^0.1.1, d@~0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/d/-/d-0.1.1.tgz#da184c535d18d8ee7ba2aa229b914009fae11309"
@@ -3529,14 +3518,6 @@ es-to-primitive@^1.1.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.1"
 
-es5-ext@^0.10.12, es5-ext@^0.10.35, es5-ext@^0.10.9, es5-ext@~0.10.14:
-  version "0.10.46"
-  resolved "https://registry.yarnpkg.com/es5-ext/-/es5-ext-0.10.46.tgz#efd99f67c5a7ec789baa3daa7f79870388f7f572"
-  dependencies:
-    es6-iterator "~2.0.3"
-    es6-symbol "~3.1.1"
-    next-tick "1"
-
 es5-ext@^0.10.7, es5-ext@^0.10.8, es5-ext@~0.10.11, es5-ext@~0.10.2, es5-ext@~0.10.7:
   version "0.10.12"
   resolved "https://registry.yarnpkg.com/es5-ext/-/es5-ext-0.10.12.tgz#aa84641d4db76b62abba5e45fd805ecbab140047"
@@ -3552,14 +3533,6 @@ es6-iterator@2:
     es5-ext "^0.10.7"
     es6-symbol "3"
 
-es6-iterator@~2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/es6-iterator/-/es6-iterator-2.0.3.tgz#a7de889141a05a94b0854403b2d0a0fbfa98f3b7"
-  dependencies:
-    d "1"
-    es5-ext "^0.10.35"
-    es6-symbol "^3.1.1"
-
 es6-map@^0.1.3:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/es6-map/-/es6-map-0.1.4.tgz#a34b147be224773a4d7da8072794cefa3632b897"
@@ -3570,10 +3543,6 @@ es6-map@^0.1.3:
     es6-set "~0.1.3"
     es6-symbol "~3.1.0"
     event-emitter "~0.3.4"
-
-es6-promise-pool@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/es6-promise-pool/-/es6-promise-pool-2.5.0.tgz#147c612b36b47f105027f9d2bf54a598a99d9ccb"
 
 es6-promise@^3.0.2:
   version "3.3.1"
@@ -3605,20 +3574,6 @@ es6-symbol@3, es6-symbol@~3.1, es6-symbol@~3.1.0:
   dependencies:
     d "~0.1.1"
     es5-ext "~0.10.11"
-
-es6-symbol@^3.1.1, es6-symbol@~3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/es6-symbol/-/es6-symbol-3.1.1.tgz#bf00ef4fdab6ba1b46ecb7b629b4c7ed5715cc77"
-  dependencies:
-    d "1"
-    es5-ext "~0.10.14"
-
-es6-template-strings@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/es6-template-strings/-/es6-template-strings-2.0.1.tgz#b166c6a62562f478bb7775f6ca96103a599b4b2c"
-  dependencies:
-    es5-ext "^0.10.12"
-    esniff "^1.1"
 
 es6-weak-map@^2.0.1:
   version "2.0.1"
@@ -3767,13 +3722,6 @@ eslint@^3.3.1:
     table "^3.7.8"
     text-table "~0.2.0"
     user-home "^2.0.0"
-
-esniff@^1.1:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/esniff/-/esniff-1.1.0.tgz#c66849229f91464dede2e0d40201ed6abf65f2ac"
-  dependencies:
-    d "1"
-    es5-ext "^0.10.12"
 
 espree@^3.3.1:
   version "3.3.2"
@@ -6760,7 +6708,7 @@ netmask@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
 
-next-tick@1, next-tick@^1.0.0:
+next-tick@^1.0.0:
   version "1.0.0"
   resolved "http://registry.npmjs.org/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
 
@@ -9543,7 +9491,7 @@ superagent@^2.2.0:
     qs "^6.1.0"
     readable-stream "^2.0.5"
 
-superagent@^3.5.2, superagent@^3.8.0:
+superagent@^3.8.0:
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/superagent/-/superagent-3.8.1.tgz#2571fd921f3fcdba43ac68c3b35c91951532701f"
   dependencies:
