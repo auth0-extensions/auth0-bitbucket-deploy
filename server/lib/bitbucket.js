@@ -60,11 +60,12 @@ const isConfigurable = (file, directory) =>
  */
 const getDatabaseScriptDetails = (filename) => {
   const parts = filename.split('/');
-  if (parts.length === 3 && /\.js$/i.test(parts[2])) {
-    const scriptName = path.parse(parts[2]).name;
+  const length = parts.length;
+  if (length >= 3 && /\.js$/i.test(parts[length - 1])) {
+    const scriptName = path.parse(parts[length - 1]).name;
     if (constants.DATABASE_SCRIPTS.indexOf(scriptName) > -1) {
       return {
-        database: parts[1],
+        database: parts[length - 2],
         name: path.parse(scriptName).name
       };
     }
