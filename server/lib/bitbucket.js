@@ -548,7 +548,7 @@ const getDatabaseData = (parsedRepo, branch, files, shaToken) => {
       databases[settings.database] = databases[settings.database] || [];
       databases[settings.database].push({
         ...settings,
-        id: file.id,
+        sha: file.sha,
         path: file.path
       });
     }
