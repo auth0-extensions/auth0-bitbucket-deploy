@@ -73,6 +73,18 @@ const getDatabaseScriptDetails = (filename) => {
   return null;
 };
 
+const getDatabaseSettingsDetails = (filename) => {
+  const parts = filename.split('/');
+  const length = parts.length;
+  if (length >= 3 && parts[length - 1] === 'settings.json') {
+    return {
+      database: parts[length - 2],
+      name: 'settings'
+    };
+  }
+  return null;
+};
+
 /*
  * Only Javascript and JSON files.
  */
@@ -96,8 +108,9 @@ const validFilesOnly = (fileName) => {
   } else if (isConfigurable(fileName, constants.RULES_CONFIGS_DIRECTORY)) {
     return /\.(js|json)$/i.test(fileName);
   } else if (isDatabaseConnection(fileName)) {
-    const script = getDatabaseScriptDetails(fileName);
-    return !!script;
+    const script = !!getDatabaseScriptDetails(fileName);
+    const settings = !!getDatabaseSettingsDetails(fileName);
+    return script || settings;
   }
   return false;
 };
@@ -159,9 +172,18 @@ const unifyItem = (item, type) => {
       return ({ ...data });
     }
     case 'databases': {
+      const settings = item.settings || {};
       const customScripts = {};
+      const options = settings.options || {};
+
       _.forEach(item.scripts, (script) => { customScripts[script.name] = script.scriptFile; });
-      return ({ strategy: 'auth0', name: item.name, options: { customScripts, enabledDatabaseCustomization: true } });
+
+      if (item.scripts || item.scripts.length) {
+        options.customScripts = customScripts;
+        options.enabledDatabaseCustomization = true;
+      }
+
+      return ({ ...settings, options, strategy: 'auth0', name: item.name });
     }
     case 'resourceServers':
     case 'connections':
@@ -486,10 +508,14 @@ const downloadDatabaseScript = (parsedRepo, branch, databaseName, scripts, shaTo
   scripts.forEach(script => {
     downloads.push(downloadFile(parsedRepo, branch, script, shaToken)
       .then(file => {
-        database.scripts.push({
-          name: script.name,
-          scriptFile: file.contents
-        });
+        if (script.name === 'settings') {
+          database.settings = file.contents;
+        } else {
+          database.scripts.push({
+            name: script.name,
+            scriptFile: file.contents
+          });
+        }
       })
     );
   });
@@ -501,17 +527,28 @@ const downloadDatabaseScript = (parsedRepo, branch, databaseName, scripts, shaTo
 /*
  * Get all database scripts.
  */
-const getDatabaseScripts = (parsedRepo, branch, files, shaToken) => {
+const getDatabaseData = (parsedRepo, branch, files, shaToken) => {
   const databases = {};
 
   // Determine if we have the script, the metadata or both.
   _.filter(files, f => isDatabaseConnection(f.path)).forEach(file => {
     const script = getDatabaseScriptDetails(file.path);
+    const settings = getDatabaseSettingsDetails(file.path);
+
     if (script) {
       databases[script.database] = databases[script.database] || [];
       databases[script.database].push({
         ...script,
         sha: file.sha,
+        path: file.path
+      });
+    }
+
+    if (settings) {
+      databases[settings.database] = databases[settings.database] || [];
+      databases[settings.database].push({
+        ...settings,
+        id: file.id,
         path: file.path
       });
     }
@@ -590,7 +627,7 @@ export default (repository, branch, sha) =>
 
         const promises = {
           rules: getRules(parsedRepo, branch, files, sha),
-          databases: getDatabaseScripts(parsedRepo, branch, files, sha),
+          databases: getDatabaseData(parsedRepo, branch, files, sha),
           emailProvider: getEmailProvider(parsedRepo, branch, files, sha),
           emailTemplates: getHtmlTemplates(parsedRepo, branch, files, sha, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
           pages: getHtmlTemplates(parsedRepo, branch, files, sha, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
